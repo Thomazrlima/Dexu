@@ -28,6 +28,24 @@ Consultas HTTP GET à PokéAPI em 26/09/2026; identificadores e trechos selecion
 
 O endpoint de encontro agrega entradas por área, com `version_details` e `encounter_details`; a condição pertence a **cada detalhe**. O endpoint de Pokémon agrega golpes de muitos jogos; filtrar `version_group_details` antes de interpretar qualquer método. A [documentação dos modelos da PokéAPI](https://pokeapi.co/docs/v2#pokemon) define esses campos, e o [manual oficial, página PDF 4](https://csassets.nintendo.com/noaext/image/private/t_KA_PDF/DS_Pokemon_SoulSilver) confirma que o relógio do DS afeta eventos dependentes do tempo.
 
+Para repetir as conferências sem interpretar uma resposta inteira a olho, consultar os URLs acima e filtrar os campos aninhados. Exemplo em PowerShell:
+
+```powershell
+$pokemon = Invoke-RestMethod 'https://pokeapi.co/api/v2/pokemon/chikorita/'
+$pokemon.moves | ForEach-Object {
+  $move = $_.move.name
+  $_.version_group_details |
+    Where-Object { $_.version_group.name -eq 'heartgold-soulsilver' } |
+    ForEach-Object { [pscustomobject]@{ move = $move; method = $_.move_learn_method.name; level = $_.level_learned_at } }
+}
+$encounters = Invoke-RestMethod 'https://pokeapi.co/api/v2/pokemon/hoothoot/encounters'
+$route29 = $encounters | Where-Object { $_.location_area.name -eq 'johto-route-29-area' }
+$route29.version_details |
+  Where-Object { $_.version.name -eq 'soulsilver' } |
+  ForEach-Object { $_.encounter_details } |
+  Select-Object method, condition_values, min_level, max_level
+```
+
 ## Fontes complementares e lacunas
 
 | Fonte primária | Evidência aproveitável | Limite para a auditoria |
