@@ -81,6 +81,8 @@ Uma prova negativa exige escopo explícito. “O encontro registrado de Growlith
 
 Estes exemplos testam o protocolo, não selecionam a amostra do produto. Antes de popular o conjunto real, outra pessoa deve reabrir os URLs, conferir os campos/páginas e condições, procurar caminhos alternativos e registrar o resultado da revisão. Não há, nesta pesquisa curta, prova exaustiva suficiente para classificar uma **espécie inteira** como `comprovadamente indisponível`.
 
+**Revisão independente em 26/09/2026:** uma segunda consulta aos endpoints acima confirmou `soulsilver` no grupo `heartgold-soulsilver`, oito detalhes `walk` + `time-night` de Hoothoot na Route 29, zero detalhes `soulsilver` de Growlithe na Route 36 e uma relação `egg` de `vine-whip` para Chikorita no grupo HGSS. A revisão valida apenas esses exemplos delimitados; não substitui a revisão de todos os caminhos da futura amostra do produto.
+
 ## Exclusões e próxima porta de auditoria
 
 - **Outra versão:** registros só de `heartgold`, Diamond/Pearl/Platinum ou outro jogo não servem como obtenção em `soulsilver`. O grupo ajuda a localizar regras e learnsets, não elimina a verificação da versão.
