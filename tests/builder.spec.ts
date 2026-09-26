@@ -75,10 +75,22 @@ test('Vulpix persiste escolhas e atualiza ofensiva e defesa com explicações se
   await expect(reopened.getByRole('checkbox', { name: /Ember/ })).toBeChecked()
 })
 
+test('slot preserva fallback quando o sprite remoto falha', async ({ page }) => {
+  await page.route('https://raw.githubusercontent.com/PokeAPI/sprites/**', (route) => route.abort())
+  await page.goto('/soulsilver')
+  await page.getByRole('button', { name: 'Criar time' }).click()
+  await page.getByLabel('Candidato auditado').selectOption('vulpix')
+  await page.getByRole('button', { name: 'Adicionar ao time' }).click()
+
+  const slot = page.getByRole('region', { name: 'Seu time' }).getByRole('listitem').first()
+  await expect(slot.getByText('V', { exact: true })).toBeVisible()
+  await expect(slot.getByRole('img', { name: 'Sprite de Vulpix' })).toBeHidden()
+})
+
 test('dataset inválido bloqueia novas afirmações sem consultar a PokéAPI', async ({ page }) => {
   const externalRequests: string[] = []
   page.on('request', (request) => {
-    if (request.url().includes('pokeapi.co')) externalRequests.push(request.url())
+    if (/(?:pokeapi\.co|raw\.githubusercontent\.com)/.test(request.url())) externalRequests.push(request.url())
   })
   await page.route('**/datasets/soulsilver-sample.json', (route) =>
     route.fulfill({ status: 200, contentType: 'application/json', body: '{"manifest":{}}' }))

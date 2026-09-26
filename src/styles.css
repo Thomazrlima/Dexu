@@ -356,6 +356,7 @@ input[type="text"], select { width: 100%; min-height: 46px; padding: 9px 12px; b
 .team-slot__sprite-frame { position: relative; display: grid; width: 72px; height: 72px; place-items: center; }
 .team-slot__sprite-fallback { display: grid; width: 100%; height: 100%; place-items: center; border-radius: 50%; background: #eaf4f8; color: #0b718f; font: 800 1.35rem 'Plus Jakarta Sans', Inter, sans-serif; }
 .team-slot__sprite { position: absolute; inset: 0; width: 72px; height: 72px; object-fit: contain; image-rendering: pixelated; }
+.team-slot__sprite[hidden] { display: none; }
 .team-slot strong { max-width: 100%; overflow: hidden; font-size: .86rem; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
 .team-slot > span:last-child { color: #587185; font-size: .68rem; line-height: 1.25; }
 .team-slot--empty { border-style: dashed; background: #fbfcfd; color: #53687a; }
