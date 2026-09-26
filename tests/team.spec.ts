@@ -3,6 +3,17 @@ import { soulSilverDataset } from '../src/data/soulsilver'
 import { auditDataset, type AuditDataset } from '../src/domain/dataset'
 import { analyzeTeam, changeTeam, createTeam, moveOptions } from '../src/domain/team'
 
+function createFullChikoritaTeam(dataset: AuditDataset, withMove: boolean) {
+  let team = createTeam('Time completo', dataset)
+  for (let index = 0; index < 6; index++) {
+    team = changeTeam(team, dataset, { type: 'add-member', variantId: 'chikorita' })
+    const memberId = team.members[index].id
+    team = changeTeam(team, dataset, { type: 'choose-ability', memberId, abilityId: 'overgrow' })
+    if (withMove) team = changeTeam(team, dataset, { type: 'toggle-move', memberId, moveId: 'razor-leaf' })
+  }
+  return team
+}
+
 test('Time aceita seis membros, inclusive espécie repetida, e impede o sétimo', () => {
   let team = createTeam('Johto', soulSilverDataset)
   for (let index = 0; index < 6; index++) team = changeTeam(team, soulSilverDataset, { type: 'add-member', variantId: 'hoothoot' })
@@ -29,15 +40,7 @@ test('troca de variante preserva habilidade e golpe antigos com motivo, sem cred
 })
 
 test('Time completo sem golpes continua com análise parcial', () => {
-  let team = createTeam('Sem moveset', soulSilverDataset)
-  for (let index = 0; index < 6; index++) {
-    team = changeTeam(team, soulSilverDataset, { type: 'add-member', variantId: 'chikorita' })
-    team = changeTeam(team, soulSilverDataset, {
-      type: 'choose-ability',
-      memberId: team.members[index].id,
-      abilityId: 'overgrow',
-    })
-  }
+  const team = createFullChikoritaTeam(soulSilverDataset, false)
 
   expect(analyzeTeam(team, soulSilverDataset).partial).toBe(true)
 })
@@ -50,13 +53,7 @@ test('efeito defensivo desconhecido preserva defesa natural e torna a análise p
   overgrow.evidenceIds = []
   auditDataset(uncertainDataset)
 
-  let team = createTeam('Defesa em revisão', uncertainDataset)
-  for (let index = 0; index < 6; index++) {
-    team = changeTeam(team, uncertainDataset, { type: 'add-member', variantId: 'chikorita' })
-    const memberId = team.members[index].id
-    team = changeTeam(team, uncertainDataset, { type: 'choose-ability', memberId, abilityId: 'overgrow' })
-    team = changeTeam(team, uncertainDataset, { type: 'toggle-move', memberId, moveId: 'razor-leaf' })
-  }
+  const team = createFullChikoritaTeam(uncertainDataset, true)
 
   const analysis = analyzeTeam(team, uncertainDataset)
   const fire = analysis.defense.find((row) => row.type === 'fire')!
