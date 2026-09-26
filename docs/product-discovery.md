@@ -12,33 +12,37 @@ Registro das decisões tomadas na entrevista. Este documento ainda não é uma e
 - O marco da campanha é imediatamente antes do primeiro confronto com Red, após a jornada por Johto e Kanto. A antiga restrição aos primeiros créditos foi substituída por esta decisão; recompensas e métodos desbloqueados só depois de Red ficam fora.
 - Cada time tem uma versão individual fixa. HeartGold e SoulSilver podem compartilhar regras, mas trocar a versão de um time salvo não faz parte do fluxo definido.
 - A seleção inicial de Pokémon considera os obtidos na própria versão até o marco da campanha. Evolução por troca de um Pokémon originário de SoulSilver é permitida; exclusivos recebidos de outras versões, transferências e eventos não entram nesse conjunto.
-- Pokémon obtidos apenas por meio do Pokéwalker também ficam fora do conjunto elegível do MVP.
+- Pokémon obtidos apenas por meio do Pokéwalker também ficam fora do conjunto elegível do protótipo.
 - Métodos normais acessíveis até o marco da campanha dentro de SoulSilver contam, inclusive encontros por horário/dia, Safari Zone, trocas com personagens do jogo, presentes e reprodução. Condições relevantes devem ser informadas, mesmo quando o método é demorado ou opcional.
 - Golpes selecionáveis devem ser aprendíveis até o marco da campanha por level-up, TM/HM, egg move, tutor ou move reminder disponíveis em SoulSilver. Golpes que exigem treinamento até nível alto continuam válidos.
 - A validação é individual por membro e golpe. O Dexu não garante que todas as configurações do time sejam reproduzíveis juntas em um único save com seus recursos limitados.
 - Golpes aprendidos por uma pré-evolução são válidos quando a sequência até o Pokémon escolhido é possível até o marco da campanha.
 - Egg moves só aparecem como válidos quando a cadeia de reprodução necessária for comprovadamente acessível até o marco da campanha. Na ausência dessa prova, ficam ocultos do conjunto de golpes válidos.
 - O Team Builder oferece inicialmente apenas formas e variantes alcançáveis até o marco da campanha de SoulSilver que alterem tipos, habilidades, golpes ou outra regra relevante ao time.
-- Cada membro do time configura Pokémon ou forma elegível, habilidade comprovadamente possível na campanha de SoulSilver e até quatro golpes. Item, natureza, nível, gender, EVs, IVs, shiny e nickname ficam fora do MVP.
+- Cada membro do time configura Pokémon ou forma elegível, habilidade comprovadamente possível na campanha de SoulSilver e até quatro golpes. Item, natureza, nível, gender, EVs, IVs, shiny e nickname ficam fora do protótipo.
 - Times podem ter de zero a seis membros e repetir espécies. Requisitos de formas dependentes de item precisam ser validados e explicados mesmo sem um campo geral de item.
 - A cobertura ofensiva considera golpes selecionados que causam dano e têm tipo efetivo conhecido, contra cada tipo defensor isolado. Indica membros e golpes responsáveis; um golpe de tipo variável continua selecionável, mas não recebe crédito quando seu tipo efetivo é desconhecido.
 - A cobertura defensiva distingue relações naturais de tipo dos efeitos comprovados da habilidade escolhida em condições normais. A análise não afirma o resultado de cada confronto real com um Pokémon de dois tipos.
 - Todo golpe de dano super efetivo com tipo conhecido conta como cobertura ofensiva, sem limite de poder, precisão ou STAB e sem estimativa de dano.
 - A cobertura defensiva preserva o multiplicador natural de tipos, incluindo diferenças como 2× e 4×. Efeitos da habilidade permanecem identificados à parte.
-- Os alertas do MVP descrevem fatos verificáveis de cobertura, sem nota geral, limiares qualitativos ou recomendações automáticas de substituição.
+- Os alertas do protótipo descrevem fatos verificáveis de cobertura, sem nota geral, limiares qualitativos ou recomendações automáticas de substituição.
 - O Team Builder mostra quais HMs foram escolhidos e as capacidades de campo correspondentes, sem simular obstáculos, insígnias ou progressão completa da história.
 - O resumo de campo mostra HMs escolhidos e ausentes, sem afirmar que uma etapa da campanha está bloqueada.
-- A Pokédex do MVP usa o catálogo regional de SoulSilver e mostra a disponibilidade de cada entrada para a campanha; presença na Pokédex não implica elegibilidade para o time.
-- A Pokédex permite busca e filtros por nome, número e tipo, mostra tipos, formas relevantes, habilidades, golpes e condição de obtenção, e permite adicionar um Pokémon ao time quando elegível.
-- Marcar Pokémon possuídos ou registrados, incluindo uma Dex pessoal, fica para depois do MVP.
-- O MVP salva vários times no mesmo navegador, sem conta e sem sincronização entre dispositivos. A forma técnica de armazenamento ainda não foi escolhida.
-- Compartilhamento por link, publicação de times, perfis e exploração social ficam para depois do MVP.
+- A Pokédex do protótipo usa o catálogo regional de SoulSilver e mostra a situação de verificação de cada entrada para a campanha; presença na Pokédex não implica elegibilidade para o time.
+- A área de exploração inclui uma visão “Disponíveis na campanha” com todos os candidatos verificados até Red, inclusive espécies sem número regional. A National Dex completa fica fora do primeiro marco.
+- No protótipo parcial, entradas da Pokédex regional ainda não auditadas aparecem como “ainda não verificadas” e não podem ser adicionadas ao time. Isso é distinto de “comprovadamente indisponível até Red”.
+- O subconjunto verificado do protótipo será escolhido para exercitar caminhos e mecânicas diferentes de obtenção, evolução, golpes, variantes e habilidades; a lista concreta depende da conferência dos dados de SoulSilver.
+- A Pokédex permite busca e filtros por nome, número e tipo, mostra dados catalográficos e, para candidatos verificados, formas relevantes, habilidades, golpes e condição de obtenção; permite adicionar um Pokémon ao time quando elegível.
+- Marcar Pokémon possuídos ou registrados, incluindo uma Dex pessoal, fica para depois do protótipo.
+- O protótipo salva vários times no mesmo navegador, sem conta e sem sincronização entre dispositivos. A forma técnica de armazenamento ainda não foi escolhida.
+- Compartilhamento por link, publicação de times, perfis e exploração social ficam para depois do protótipo.
 - A organização inicial dos times é uma lista com nome editável, data da última edição e ações de abrir, duplicar e excluir; pastas, tags e histórico ficam para depois.
 - Quando contas forem adicionadas, a importação dos times locais será explícita, com revisão de conflitos; não haverá envio automático.
 - Times associados a perfis futuros serão privados por padrão e só ficarão públicos por ação explícita em cada time.
 - O protótipo privado não terá backend de aplicação nem banco de dados próprios. Dados auditados serão entregues como conjunto versionado; times ficarão no navegador com backup exportável/importável. O formato interno permanece uma decisão da especificação.
-- Antes do lançamento, todos os Pokémon elegíveis e seus golpes por level-up/TM/HM devem ser verificados. Egg moves, tutors e move reminder entram somente nas relações comprovadas; a cobertura parcial desses métodos deve ser declarada.
-- A meta de verificação acima já vale para o primeiro protótipo privado; ele não usará um subconjunto de Pokémon nem dados fictícios para validar o fluxo.
+- O primeiro protótipo privado pode usar um subconjunto claramente declarado de Pokémon cujas opções oferecidas tenham sido verificadas até o marco de Red; isso não promete esgotar todos os métodos de aprendizado de cada candidato nem tratará escolhas fora desse subconjunto como válidas sem prova.
+- A próxima especificação com `to-spec` terá como alvo apenas esse protótipo privado; a cobertura completa de SoulSilver até Red será um marco posterior.
+- Uma versão posterior que se apresente como planejador completo da jornada até Red deverá verificar todos os Pokémon elegíveis e seus golpes por level-up/TM/HM. Egg moves, tutors e move reminder entram somente nas relações comprovadas; a cobertura parcial desses métodos deve ser declarada.
 - O produto mostra o método de obtenção ou aprendizado e condições relevantes conhecidas para explicar por que uma escolha é válida; não precisa fornecer um guia passo a passo.
 - A PokéAPI é fonte inicial, não autoridade suficiente para a validade até o marco da campanha. O Dexu usará um conjunto próprio, auditado, complementar e versionado de dados de SoulSilver. Arquivos ou banco ainda não foram escolhidos.
 - A interface e as explicações iniciais serão em português do Brasil; nomes de Pokémon, golpes e habilidades seguirão o inglês usado no jogo.
@@ -47,7 +51,7 @@ Registro das decisões tomadas na entrevista. Este documento ainda não é uma e
 - Disponibilidade até o marco da campanha é comprovada por caminhos de obtenção ligados à variante, à versão, ao período da campanha e ao método; não é um booleano da espécie ou da entrada da Pokédex.
 - Learnset registra relações de aprendizado conhecidas e seus métodos; golpes elegíveis são o subconjunto comprovado aceito pela política da campanha. As duas listas não são sinônimas.
 - O primeiro marco é um protótipo privado para validar produto e dados. Não há autorização confirmada para imagens, capas ou outros materiais da franquia; eventual publicação pública dependerá de avaliação específica dos direitos.
-- A seleção visual inicial mostrará SoulSilver e cards de HeartGold, Emerald e Platinum marcados como “em estudo, sem previsão”. Apenas SoulSilver será jogável no MVP; os demais cards não implicam cronograma.
+- A seleção visual inicial mostrará SoulSilver e cards de HeartGold, Emerald e Platinum marcados como “em estudo, sem previsão”. Apenas SoulSilver será jogável no protótipo; os demais cards não implicam cronograma.
 - Os cards de Pokémon do protótipo usarão nome, número, tipos e elementos visuais próprios do Dexu, sem depender de sprites da franquia.
 - Montagem, edição, análise do time e consulta à Pokédex devem funcionar por completo tanto em celular quanto em desktop.
 - Não há garantia de uso offline no primeiro marco, embora os times sejam armazenados no navegador.
@@ -55,12 +59,12 @@ Registro das decisões tomadas na entrevista. Este documento ainda não é uma e
 - O card de SoulSilver leva a uma área do jogo com acesso a criar time, abrir times salvos e explorar a Pokédex.
 - A configuração dos membros ocorre no fluxo do Team Builder; a análise reage imediatamente às mudanças e aparece desde o primeiro membro, identificando quando o time ainda está incompleto.
 - Edições são salvas automaticamente. Cada time começa com nome sugerido e editável; vários times ficam no mesmo navegador.
-- O MVP permite exportar e importar arquivo de backup dos times locais, sem criar um fluxo de publicação ou compartilhamento público.
+- O protótipo permite exportar e importar arquivo de backup dos times locais, sem criar um fluxo de publicação ou compartilhamento público.
 - Correções nos dados auditados revalidam times salvos. Escolhas que se tornarem inválidas são preservadas e sinalizadas com motivo, sem remoção automática.
 - Escolhas salvas que se tornaram inválidas não contribuem para os cálculos afetados; a análise indica que está parcial.
 - Uma habilidade elegível pode ser escolhida mesmo quando seu efeito defensivo não foi modelado com confiança. A defesa natural continua visível e a omissão do efeito da habilidade é indicada.
 - Se o conjunto de dados auditados falhar ao carregar, o Dexu informa o erro e preserva os times locais, mas não produz novas afirmações de validade ou cobertura nem substitui a base por consulta ao vivo à PokéAPI.
-- Antes do MVP, todas as habilidades elegíveis em SoulSilver que alterem imunidade ou dano recebido conforme o tipo do ataque, em condições normais, devem ser modeladas e verificadas. Outros efeitos de sobrevivência ficam fora da cobertura de tipos; a regra de análise parcial cobre lacunas descobertas após a auditoria.
+- Antes do protótipo, todas as habilidades dos Pokémon incluídos na amostra que alterem imunidade ou dano recebido conforme o tipo do ataque, em condições normais, devem ser modeladas e verificadas. A versão posterior com catálogo completo exigirá essa cobertura para todos os seus candidatos. Outros efeitos de sobrevivência ficam fora da cobertura de tipos; a regra de análise parcial cobre lacunas descobertas após a auditoria.
 - Contagens agregadas de imunidade incluem tanto tipos naturais quanto habilidades, mas devem explicar a origem de cada caso.
 
 ## Perguntas abertas
@@ -72,7 +76,7 @@ Registro das decisões tomadas na entrevista. Este documento ainda não é uma e
 - Qual estratégia de direitos viabilizará eventual lançamento público com nomes e imagens da franquia.
 - Qual formato de backup e migração futura preservará versões e escolhas inválidas sem corromper times.
 - Quais fontes complementares permitem provar disponibilidade até o marco da campanha, cadeias de reprodução e efeitos de habilidades em SoulSilver.
-- O trabalho necessário para auditar o conjunto completo de Pokémon elegíveis e os golpes básicos pode ser alto; a viabilidade do marco privado depende de encontrar fontes verificáveis para SoulSilver.
+- O trabalho necessário para auditar o conjunto completo de Pokémon elegíveis até Red e os golpes básicos pode ser alto. O protótipo privado limita explicitamente seu subconjunto, mas a versão posterior depende de fontes verificáveis para SoulSilver.
 
 ## Fatos a validar
 

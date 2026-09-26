@@ -63,6 +63,14 @@ Utilidade fora de batalha que os HMs escolhidos nos golpes dos membros oferecem 
 Catálogo numerado de espécies associado ao jogo e à região, que também pode conter entradas indisponíveis para um time até o marco da campanha.
 _Evitar_: tratar presença no catálogo como prova de elegibilidade para o time.
 
+**Catálogo da campanha**:
+Visão das espécies verificadas com ao menos uma variante elegível até o marco da campanha, inclusive quando não possuem número na Pokédex regional. No protótipo, essa visão declara que a verificação cobre apenas uma amostra; um marco posterior poderá cobrir todos os candidatos.
+_Evitar_: apresentar uma amostra verificada como se fosse a Pokédex regional, a National Dex completa ou todos os Pokémon elegíveis da campanha.
+
+**Situação de disponibilidade**:
+Resultado da verificação de uma variante para uma versão e marco da campanha: elegível, comprovadamente indisponível ou ainda não verificada.
+_Evitar_: chamar ausência de verificação de indisponibilidade no jogo.
+
 **Contexto de regras do jogo**:
 Conjunto de regras aplicáveis a um time em uma versão e recorte de campanha, incluindo regras da geração, regras compartilhadas por um grupo de versões e restrições específicas da versão.
 _Evitar_: confundi-lo com o catálogo inteiro de Pokédex, espécies e golpes.
