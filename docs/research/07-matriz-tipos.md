@@ -1,6 +1,7 @@
 # 07 — Matriz histórica de efetividade de tipos em SoulSilver
 
-**Conferido em:** 2026-09-26  
+**Conferido em:** 2026-09-26
+
 **Contexto:** SoulSilver, geração IV. A relação abaixo vale para um tipo de golpe atacante e um tipo natural defensor, antes de habilidades, itens, condições ou efeitos de golpe. Não é cálculo de dano nem inclui STAB.
 
 ## Fontes e método

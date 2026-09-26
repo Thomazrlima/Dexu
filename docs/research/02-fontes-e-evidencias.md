@@ -1,7 +1,9 @@
 # Fontes e protocolo de evidências — SoulSilver até antes de Red
 
-**Ticket:** 02 — Protocolo de fontes e evidências de SoulSilver  
-**Conferência das fontes:** 26/09/2026  
+**Ticket:** 02 — Protocolo de fontes e evidências de SoulSilver
+
+**Conferência das fontes:** 26/09/2026
+
 **Estado:** pesquisa de base; não é dataset auditado nem autorização para oferecer qualquer opção na interface.
 
 ## Recorte e hierarquia da prova
