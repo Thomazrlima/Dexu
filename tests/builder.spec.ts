@@ -18,18 +18,20 @@ for (const width of [375, 1365]) {
   })
 }
 
-test('Team Builder organiza os seis slots em uma faixa horizontal no desktop', async ({ page }) => {
-  await page.setViewportSize({ width: 1365, height: 850 })
-  await page.goto('/soulsilver')
-  await page.getByRole('button', { name: 'Criar time' }).click()
+for (const width of [1024, 1365]) {
+  test(`Team Builder organiza os seis slots em uma faixa horizontal em ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 850 })
+    await page.goto('/soulsilver')
+    await page.getByRole('button', { name: 'Criar time' }).click()
 
-  const teamStrip = page.getByRole('region', { name: 'Seu time' })
-  const slots = teamStrip.getByRole('listitem')
-  await expect(slots).toHaveCount(6)
-  const verticalPositions = await slots.evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)))
-  expect(new Set(verticalPositions).size).toBe(1)
-  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(1365)
-})
+    const teamStrip = page.getByRole('region', { name: 'Seu time' })
+    const slots = teamStrip.getByRole('listitem')
+    await expect(slots).toHaveCount(6)
+    const verticalPositions = await slots.evaluateAll((items) => items.map((item) => Math.round(item.getBoundingClientRect().top)))
+    expect(new Set(verticalPositions).size).toBe(1)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(width)
+  })
+}
 
 test('Vulpix persiste escolhas e atualiza ofensiva e defesa com explicações separadas', async ({ page }) => {
   await page.goto('/soulsilver')

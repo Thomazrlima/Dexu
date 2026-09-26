@@ -93,7 +93,7 @@ function AcquisitionSummary({ dataset, variantId }: { dataset: AuditDataset; var
   return option && <div className="acquisition"><strong>{option.paths[0]?.method}.</strong> {option.paths.map((path) => path.conditions).join(' ')} <a href={dataset.evidence.find((item) => item.id === option.paths[0]?.evidenceIds[0])?.reference} target="_blank" rel="noreferrer">Ver fonte</a></div>
 }
 
-function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset }) {
+function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset | null }) {
   return <section className='team-strip' aria-label='Seu time'>
     <div className='team-strip__heading'>
       <div><span className='eyebrow'>Seu time</span><h2 id='team-strip-title'>Seis posições para a jornada</h2></div>
@@ -108,13 +108,15 @@ function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset }) {
           <strong>Slot vazio</strong>
           <span>Adicionar Pokémon</span>
         </li>
-        const variant = dataset.variants.find((item) => item.id === member.variantId)
+        const variant = dataset?.variants.find((item) => item.id === member.variantId)
+        const name = variant?.name ?? member.variantId
         return <li className='team-slot' key={member.id}>
           <span className='team-slot__number'>{String(index + 1).padStart(2, '0')}</span>
-          {variant
-            ? <img className='team-slot__sprite' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt={`Sprite de ${variant.name}`} referrerPolicy='no-referrer' />
-            : <span className='team-slot__empty-icon' aria-hidden='true'>?</span>}
-          <strong>{variant?.name ?? member.variantId}</strong>
+          <span className='team-slot__sprite-frame'>
+            <span className='team-slot__sprite-fallback' aria-hidden='true'>{name.slice(0, 1).toUpperCase()}</span>
+            {variant && <img className='team-slot__sprite' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt={`Sprite de ${variant.name}`} referrerPolicy='no-referrer' onError={(event) => { event.currentTarget.hidden = true }} />}
+          </span>
+          <strong>{name}</strong>
           <span>{variant?.types.map((type) => typeNames[type]).join(' / ') ?? 'Em revisão'}</span>
         </li>
       })}
@@ -206,7 +208,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
     {dataset && <SampleNote dataset={dataset} />}
-    {dataset && <TeamStrip team={team} dataset={dataset} />}
+    <TeamStrip team={team} dataset={dataset} />
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>
         <label className="field-label" htmlFor="team-name">Nome do time</label><input id="team-name" type="text" maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }) }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur() }} />
