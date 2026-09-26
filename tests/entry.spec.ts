@@ -8,9 +8,9 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1365, height: 900 
     await expect(page.getByRole('heading', { name: /escolha seu jogo/i })).toBeVisible()
     await expect(page.getByRole('link', { name: /entrar em soulsilver/i })).toBeVisible()
     for (const game of ['HeartGold', 'Emerald', 'Platinum']) {
-      const card = page.getByRole('article', { name: game })
-      await expect(card).toContainText('Em estudo, sem previsão')
-      await expect(card.getByRole('link')).toHaveCount(0)
+      const row = page.getByRole('listitem').filter({ hasText: game })
+      await expect(row).toContainText('Em estudo, sem previsão')
+      await expect(row.getByRole('link')).toHaveCount(0)
     }
 
     await page.keyboard.press('Tab')
@@ -27,9 +27,17 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1365, height: 900 
     for (const action of ['Criar time', 'Times salvos', 'Pokédex']) {
       const heading = page.getByRole('heading', { name: action })
       await expect(heading).toBeVisible()
-      await expect(page.getByRole('article', { name: action })).toContainText('Ainda não disponível')
+      const row = page.getByRole('listitem').filter({ has: heading })
+      await expect(row).toContainText('Ainda não disponível')
+      await expect(row.getByRole('link')).toHaveCount(0)
     }
-    await expect(page.getByText(/Johto e Kanto.*antes do primeiro confronto com Red/i)).toBeVisible()
+    await expect(page.getByText('Johto e Kanto', { exact: true })).toBeVisible()
+    await expect(page.getByText('Antes do primeiro confronto com Red', { exact: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width)
+
+    await page.getByRole('link', { name: 'Voltar aos jogos' }).focus()
+    await page.keyboard.press('Enter')
+    await expect(page).toHaveURL(/\/$/)
+    await expect(page.getByRole('heading', { name: /escolha seu jogo/i })).toBeVisible()
   })
 }

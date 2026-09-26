@@ -12,4 +12,4 @@ Requer Node.js 20. Execute `npm ci` e depois `npm run dev`. Abra o endereço loc
 - `npm test`: executa o smoke de navegador em Chrome nas larguras de celular e desktop. Requer Chrome instalado.
 - `npm run build`: verifica TypeScript e gera os arquivos estáticos em `dist/`.
 
-Os assets de marca são os arquivos já presentes na raiz. Plus Jakarta Sans e Inter permanecem em fallback local porque os arquivos e suas licenças ainda não foram confirmados. A distribuição do protótipo deve continuar restrita; esta fatia não inclui autenticação.
+Os PNGs transparentes usados na interface ficam em `assets/visuals/`. São recortes fiéis de `Logo.png` e `Icon.png`, preservados na raiz. O visual de SoulSilver usa a paleta e informações do jogo, sem capas, sprites ou arte da franquia. Plus Jakarta Sans e Inter permanecem em fallback local porque os arquivos e suas licenças ainda não foram confirmados. A distribuição do protótipo deve continuar restrita; esta fatia não inclui autenticação.
