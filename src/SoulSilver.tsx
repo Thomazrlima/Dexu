@@ -34,7 +34,10 @@ function DataNotice({ error, retry }: { error: string; retry: () => void }) {
 }
 
 function SampleNote({ dataset }: { dataset: AuditDataset }) {
-  return <p className="sample-note"><strong>Amostra parcial auditada.</strong> {dataset.manifest.sample} Cada escolha é validada individualmente; itens ou presentes limitados não são garantidos simultaneamente para todo o Time.</p>
+  return <details className='sample-note'>
+    <summary>Amostra parcial auditada</summary>
+    <p>{dataset.manifest.sample} Cada escolha é validada individualmente; itens ou presentes limitados não são garantidos simultaneamente para todo o Time.</p>
+  </details>
 }
 
 export function SoulSilverArea() {
@@ -88,6 +91,35 @@ export function SavedTeamsPage() {
 function AcquisitionSummary({ dataset, variantId }: { dataset: AuditDataset; variantId: string }) {
   const option = variantOptions(dataset).find(({ variant }) => variant.id === variantId)
   return option && <div className="acquisition"><strong>{option.paths[0]?.method}.</strong> {option.paths.map((path) => path.conditions).join(' ')} <a href={dataset.evidence.find((item) => item.id === option.paths[0]?.evidenceIds[0])?.reference} target="_blank" rel="noreferrer">Ver fonte</a></div>
+}
+
+function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset }) {
+  return <section className='team-strip' aria-label='Seu time'>
+    <div className='team-strip__heading'>
+      <div><span className='eyebrow'>Seu time</span><h2 id='team-strip-title'>Seis posições para a jornada</h2></div>
+      <span className='team-strip__count'>{team.members.length}/6</span>
+    </div>
+    <ul className='team-strip__slots'>
+      {Array.from({ length: 6 }, (_, index) => {
+        const member = team.members[index]
+        if (!member) return <li className='team-slot team-slot--empty' key={index}>
+          <span className='team-slot__number'>{String(index + 1).padStart(2, '0')}</span>
+          <span className='team-slot__empty-icon' aria-hidden='true'>+</span>
+          <strong>Slot vazio</strong>
+          <span>Adicionar Pokémon</span>
+        </li>
+        const variant = dataset.variants.find((item) => item.id === member.variantId)
+        return <li className='team-slot' key={member.id}>
+          <span className='team-slot__number'>{String(index + 1).padStart(2, '0')}</span>
+          {variant
+            ? <img className='team-slot__sprite' src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt={`Sprite de ${variant.name}`} referrerPolicy='no-referrer' />
+            : <span className='team-slot__empty-icon' aria-hidden='true'>?</span>}
+          <strong>{variant?.name ?? member.variantId}</strong>
+          <span>{variant?.types.map((type) => typeNames[type]).join(' / ') ?? 'Em revisão'}</span>
+        </li>
+      })}
+    </ul>
+  </section>
 }
 
 function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'][number]; index: number; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
@@ -174,6 +206,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
     {dataset && <SampleNote dataset={dataset} />}
+    {dataset && <TeamStrip team={team} dataset={dataset} />}
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>
         <label className="field-label" htmlFor="team-name">Nome do time</label><input id="team-name" type="text" maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }) }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur() }} />

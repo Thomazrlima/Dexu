@@ -69,7 +69,7 @@ function SoulSilverPage({ path }: { path: string }) {
     <>
       <SiteHeader />
       <main id="conteudo" className="page-shell page-shell--game">
-        <a className="back-link" href={path === '/soulsilver' ? '/' : '/soulsilver'}>← {path === '/soulsilver' ? 'Voltar aos jogos' : 'Voltar a SoulSilver'}</a>
+        <nav className='breadcrumbs' aria-label='Navegação contextual'><a className='back-link' aria-label={path === '/soulsilver' ? 'Voltar aos jogos' : 'Voltar a SoulSilver'} href={path === '/soulsilver' ? '/' : '/soulsilver'}><span aria-hidden='true'>←</span><span>{path === '/soulsilver' ? 'Jogos' : 'SoulSilver'}</span></a></nav>
         {path === '/soulsilver' ? <SoulSilverArea /> : path === '/soulsilver/times' ? <SavedTeamsPage /> : builderId ? <TeamBuilderPage id={builderId} /> : <p>Área não encontrada.</p>}
       </main>
     </>
