@@ -189,11 +189,11 @@ export function auditDataset(raw: unknown): AuditDataset {
     references(ids(decision.evidenceIds, 'golpe: evidência', decision.status === 'eligible'), evidence, 'golpe')
     if (decision.status === 'eligible') {
       if (variantDecisions.get(String(decision.variantId))?.status !== 'eligible') throw new Error('golpe de variante não elegível')
-      if (!relations.some((id) => {
+      if (!relations.every((id) => {
         const relation = learnset.get(id)
         return relation?.moveId === decision.moveId && relation?.availableBeforeRed === true &&
           (relation?.variantId === decision.variantId || relation?.retainedForVariantId === decision.variantId)
-      })) throw new Error('golpe elegível sem learnset e acesso ao método comprovados')
+      })) throw new Error('golpe elegível inclui learnset sem acesso ao método comprovado antes de Red')
     }
   }
 

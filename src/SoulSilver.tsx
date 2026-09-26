@@ -113,7 +113,10 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
     </select>
     {availableAbilities.length === 0 && <p className="field-help">Nenhuma habilidade desta variante foi auditada para oferta nesta amostra.</p>}
     {analysis.ability.status === 'invalid' && <p className="validation-note" role="alert">{analysis.ability.reason}</p>}
-    {analysis.ability.status === 'valid' && <p className="field-help">{analysis.ability.effect}</p>}
+    {analysis.ability.status === 'valid' && <div className="ability-explanation">
+      <p><strong>Elegibilidade.</strong> {analysis.ability.reason}</p>
+      <p><strong>Efeito defensivo.</strong> {analysis.ability.effect}</p>
+    </div>}
     <fieldset className="moves-fieldset"><legend>Golpes da posição {index + 1} <span>({member.moveIds.length}/4)</span></legend>
       {availableMoves.length === 0 && <p className="field-help">Nenhum golpe auditado para esta variante nesta amostra.</p>}
       {availableMoves.map(({ move, relations }) => <label className="move-choice" key={move.id}><input type="checkbox" checked={member.moveIds.includes(move.id)} disabled={!member.moveIds.includes(move.id) && member.moveIds.length >= 4} onChange={() => onEdit({ type: 'toggle-move', memberId: member.id, moveId: move.id })} /><span><strong>{move.name}</strong> · {move.type ? typeNames[move.type] : 'Tipo variável'} · {move.category === 'status' ? 'Status' : 'Dano'}<small>{relations.map((relation) => `${relation.method}: ${relation.conditions}`).join(' / ')}</small></span></label>)}

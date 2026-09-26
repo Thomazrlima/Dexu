@@ -288,6 +288,10 @@ input[type="text"], select { width: 100%; min-height: 46px; padding: 9px 12px; b
 .type-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 15px; }
 .type-tags span { padding: 4px 9px; border-radius: 100px; background: #eaf4f8; color: #20475f; font-size: .72rem; font-weight: 800; }
 .field-help { margin: 8px 0 0; color: #475569; font-size: .83rem; line-height: 1.5; }
+.ability-explanation { margin-top: 8px; padding-left: 11px; border-left: 3px solid #2ec5ff; color: #475569; font-size: .83rem; line-height: 1.5; }
+.ability-explanation p { margin: 0; }
+.ability-explanation p + p { margin-top: 3px; }
+.ability-explanation strong { color: #0f172a; }
 .validation-note { margin: 8px 0; color: #9b2e38; font-size: .84rem; line-height: 1.5; }
 .moves-fieldset { margin: 22px 0 0; padding: 0; border: 0; }
 .moves-fieldset legend { margin-bottom: 9px; font-weight: 800; }

@@ -195,6 +195,11 @@ export function analyzeTeam(team: Team, dataset: AuditDataset): TeamAnalysis {
   })
   return {
     members, offense, defense,
-    partial: team.members.length < 6 || members.some((member) => !member.variantValid || member.ability.status !== 'valid' || member.moves.some((move) => move.status !== 'valid')),
+    partial: team.members.length < 6 || members.some((member) =>
+      !member.variantValid ||
+      member.ability.status !== 'valid' ||
+      member.moves.length === 0 ||
+      member.moves.some((move) => move.status !== 'valid')) ||
+      defense.some((row) => row.partial),
   }
 }
