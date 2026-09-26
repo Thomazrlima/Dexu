@@ -24,13 +24,10 @@ for (const viewport of [{ width: 375, height: 812 }, { width: 1365, height: 900 
 
     await expect(page).toHaveURL(/\/soulsilver$/)
     await expect(page.getByRole('heading', { name: 'SoulSilver', exact: true })).toBeVisible()
-    for (const action of ['Criar time', 'Times salvos', 'Pokédex']) {
-      const heading = page.getByRole('heading', { name: action })
-      await expect(heading).toBeVisible()
-      const row = page.getByRole('listitem').filter({ has: heading })
-      await expect(row).toContainText('Ainda não disponível')
-      await expect(row.getByRole('link')).toHaveCount(0)
-    }
+    await expect(page.getByRole('button', { name: 'Criar time' })).toBeVisible()
+    await expect(page.getByRole('link', { name: /ver times salvos/i })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Pokédex' })).toBeVisible()
+    await expect(page.getByText('Ainda não disponível')).toBeVisible()
     await expect(page.getByText('Johto e Kanto', { exact: true })).toBeVisible()
     await expect(page.getByText('Antes do primeiro confronto com Red', { exact: true })).toBeVisible()
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(viewport.width)

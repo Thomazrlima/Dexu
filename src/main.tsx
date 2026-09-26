@@ -2,24 +2,14 @@ import React from 'react'
 import { createRoot } from 'react-dom/client'
 import logoUrl from '../assets/visuals/dexu-logo-cutout.png'
 import iconUrl from '../assets/visuals/dexu-icon-cutout.png'
+import { SavedTeamsPage, SoulSilverArea, TeamBuilderPage } from './SoulSilver'
 import './styles.css'
 
 const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
 if (favicon) favicon.href = iconUrl
-document.title = window.location.pathname === '/soulsilver' ? 'SoulSilver | Dexu' : 'Jogos | Dexu'
+document.title = window.location.pathname.startsWith('/soulsilver') ? 'SoulSilver | Dexu' : 'Jogos | Dexu'
 
 const upcomingGames = ['HeartGold', 'Emerald', 'Platinum'] as const
-
-type PlannedArea = {
-  title: string
-  detail: string
-}
-
-const plannedAreas: readonly PlannedArea[] = [
-  { title: 'Criar time', detail: 'Comece um plano para a campanha de SoulSilver.' },
-  { title: 'Times salvos', detail: 'Volte aos planos que você criou.' },
-  { title: 'Pokédex', detail: 'Explore o catálogo regional no contexto do jogo.' },
-]
 
 function SiteHeader() {
   return (
@@ -73,41 +63,14 @@ function EntryPage() {
   )
 }
 
-function SoulSilverPage() {
+function SoulSilverPage({ path }: { path: string }) {
+  const builderId = path.match(/^\/soulsilver\/times\/([a-f0-9-]+)$/)?.[1]
   return (
     <>
       <SiteHeader />
       <main id="conteudo" className="page-shell page-shell--game">
-        <a className="back-link" href="/">← Voltar aos jogos</a>
-        <section className="area-hero" aria-labelledby="game-title">
-          <div className="area-hero__copy">
-            <span className="area-hero__eyebrow">Pokémon</span>
-            <h1 id="game-title">SoulSilver</h1>
-            <p>Seu espaço para planejar um time Pokémon e consultar a campanha.</p>
-          </div>
-          <dl className="area-hero__facts">
-            <div><dt>Regiões</dt><dd>Johto e Kanto</dd></div>
-            <div><dt>Marco da campanha</dt><dd>Antes do primeiro confronto com Red</dd></div>
-          </dl>
-        </section>
-
-        <section className="planned-section" aria-labelledby="planned-title">
-          <div className="section-heading">
-            <h2 id="planned-title">O que vem nesta área</h2>
-            <p>Estas entradas serão habilitadas nas próximas etapas do protótipo.</p>
-          </div>
-          <ul className="planned-list">
-            {plannedAreas.map((area) => (
-              <li key={area.title}>
-                <div>
-                  <h3>{area.title}</h3>
-                  <p>{area.detail}</p>
-                </div>
-                <span>Ainda não disponível</span>
-              </li>
-            ))}
-          </ul>
-        </section>
+        <a className="back-link" href={path === '/soulsilver' ? '/' : '/soulsilver'}>← {path === '/soulsilver' ? 'Voltar aos jogos' : 'Voltar a SoulSilver'}</a>
+        {path === '/soulsilver' ? <SoulSilverArea /> : path === '/soulsilver/times' ? <SavedTeamsPage /> : builderId ? <TeamBuilderPage id={builderId} /> : <p>Área não encontrada.</p>}
       </main>
     </>
   )
@@ -117,7 +80,7 @@ function App() {
   return (
     <>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      {window.location.pathname === '/soulsilver' ? <SoulSilverPage /> : <EntryPage />}
+      {window.location.pathname.startsWith('/soulsilver') ? <SoulSilverPage path={window.location.pathname} /> : <EntryPage />}
     </>
   )
 }
