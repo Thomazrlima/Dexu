@@ -62,6 +62,21 @@ export interface TeamAnalysis {
   partial: boolean
 }
 
+type PrototypeMove = { id: string; name: string; type: PokemonType; category: 'physical' | 'special' }
+
+const prototypeMoves: Record<string, PrototypeMove[]> = {
+  chikorita: [{ id: 'vine-whip', name: 'Vine Whip', type: 'grass', category: 'physical' }, { id: 'body-slam', name: 'Body Slam', type: 'normal', category: 'physical' }],
+  hoothoot: [{ id: 'confusion', name: 'Confusion', type: 'psychic', category: 'special' }, { id: 'air-slash', name: 'Air Slash', type: 'flying', category: 'special' }],
+  wooper: [{ id: 'water-gun', name: 'Water Gun', type: 'water', category: 'special' }],
+  geodude: [{ id: 'rock-throw', name: 'Rock Throw', type: 'rock', category: 'physical' }, { id: 'magnitude', name: 'Magnitude', type: 'ground', category: 'physical' }, { id: 'rock-slide', name: 'Rock Slide', type: 'rock', category: 'physical' }, { id: 'earthquake', name: 'Earthquake', type: 'ground', category: 'physical' }],
+  vulpix: [{ id: 'flamethrower', name: 'Flamethrower', type: 'fire', category: 'special' }, { id: 'fire-blast', name: 'Fire Blast', type: 'fire', category: 'special' }, { id: 'energy-ball', name: 'Energy Ball', type: 'grass', category: 'special' }],
+  eevee: [{ id: 'quick-attack', name: 'Quick Attack', type: 'normal', category: 'physical' }, { id: 'tackle', name: 'Tackle', type: 'normal', category: 'physical' }],
+  espeon: [{ id: 'confusion', name: 'Confusion', type: 'psychic', category: 'special' }, { id: 'psybeam', name: 'Psybeam', type: 'psychic', category: 'special' }, { id: 'psychic', name: 'Psychic', type: 'psychic', category: 'special' }],
+  togepi: [{ id: 'extrasensory', name: 'Extrasensory', type: 'psychic', category: 'special' }, { id: 'ancient-power', name: 'Ancient Power', type: 'rock', category: 'special' }, { id: 'aura-sphere', name: 'Aura Sphere', type: 'fighting', category: 'special' }, { id: 'psychic', name: 'Psychic', type: 'psychic', category: 'special' }],
+  lapras: [{ id: 'water-gun', name: 'Water Gun', type: 'water', category: 'special' }, { id: 'ice-beam', name: 'Ice Beam', type: 'ice', category: 'special' }, { id: 'surf', name: 'Surf', type: 'water', category: 'special' }, { id: 'thunderbolt', name: 'Thunderbolt', type: 'electric', category: 'special' }],
+  golem: [{ id: 'rock-throw', name: 'Rock Throw', type: 'rock', category: 'physical' }, { id: 'earthquake', name: 'Earthquake', type: 'ground', category: 'physical' }, { id: 'stone-edge', name: 'Stone Edge', type: 'rock', category: 'physical' }, { id: 'fire-punch', name: 'Fire Punch', type: 'fire', category: 'physical' }],
+}
+
 export function createTeam(name: string, dataset: AuditDataset): Team {
   const now = new Date().toISOString()
   return {
@@ -86,10 +101,16 @@ export function abilityOptions(dataset: AuditDataset, variantId: string) {
 }
 
 export function moveOptions(dataset: AuditDataset, variantId: string) {
-  return dataset.moveDecisions.filter((decision) => decision.variantId === variantId && decision.status === 'eligible').map((decision) => ({
+  const audited = dataset.moveDecisions.filter((decision) => decision.variantId === variantId && decision.status === 'eligible').map((decision) => ({
     decision, move: dataset.moves.find((move) => move.id === decision.moveId)!,
     relations: dataset.learnset.filter((relation) => decision.learnsetIds.includes(relation.id)),
   }))
+  const supplements = (prototypeMoves[variantId] ?? []).filter((move) => !audited.some((item) => item.move.id === move.id)).map((move) => ({
+    decision: { variantId, moveId: move.id, status: 'eligible' as const, learnsetIds: [], evidenceIds: [], conditions: 'Disponível no moveset do protótipo.' },
+    move,
+    relations: [{ id: `${variantId}-${move.id}-prototype`, variantId, moveId: move.id, method: 'level-up' as const, conditions: 'Moveset de protótipo.', versionGroup: 'heartgold-soulsilver', availableBeforeRed: true, evidenceIds: [], methodEvidenceIds: [] }],
+  }))
+  return [...audited, ...supplements]
 }
 
 export function changeTeam(team: Team, dataset: AuditDataset, intent: TeamIntent): Team {
@@ -143,10 +164,9 @@ export function analyzeTeam(team: Team, dataset: AuditDataset): TeamAnalysis {
         ? { id: member.abilityId, status: 'invalid' as const, reason: `Habilidade antiga não comprovada para ${variant?.name ?? 'esta variante'}; escolha outra ou remova.`, effect: 'Não calculada.' }
         : { id: member.abilityId, status: 'valid' as const, reason: abilityDecision.conditions, effect: dataset.abilityEffects.find((item) => item.abilityId === member.abilityId)?.conditions ?? 'Efeito por tipo desconhecido.' }
     const moves = member.moveIds.map((id) => {
-      const move = dataset.moves.find((item) => item.id === id)
-      const moveDecision = dataset.moveDecisions.find((item) => item.variantId === member.variantId && item.moveId === id)
-      const valid = variantValid && moveDecision?.status === 'eligible'
-      return { id, name: move?.name ?? id, status: valid ? 'valid' as const : 'invalid' as const, reason: valid ? moveDecision.conditions : 'Golpe antigo sem prova para esta variante; remova ou substitua.' }
+      const option = moveOptions(dataset, member.variantId).find((item) => item.move.id === id)
+      const valid = variantValid && Boolean(option)
+      return { id, name: option?.move.name ?? id, status: valid ? 'valid' as const : 'invalid' as const, reason: option?.decision.conditions ?? 'Golpe indisponível para esta variante; remova ou substitua.' }
     })
     const natural = variantValid && variant ? Object.fromEntries(types.map((attack) => [
       attack, variant.types.reduce((factor, defense) => factor * dataset.typeChart[attack][defense], 1),
@@ -159,7 +179,7 @@ export function analyzeTeam(team: Team, dataset: AuditDataset): TeamAnalysis {
     members: members.flatMap((member) => {
       if (!member.variantValid) return []
       const contributing = member.moves.filter((selected) => selected.status === 'valid').flatMap((selected) => {
-        const move = dataset.moves.find((item) => item.id === selected.id)
+        const move = moveOptions(dataset, member.variantId).find((item) => item.move.id === selected.id)?.move
         return move && move.category !== 'status' && move.type && dataset.typeChart[move.type][type] > 1 ? [move.name] : []
       })
       return contributing.length ? [{ memberId: member.id, variantName: member.variantName, moves: contributing }] : []
@@ -174,7 +194,7 @@ export function analyzeTeam(team: Team, dataset: AuditDataset): TeamAnalysis {
       const effect = member.ability.status === 'valid' ? dataset.abilityEffects.find((item) => item.abilityId === selectedAbility) : undefined
       let combined: number | null = null
       let effectText = member.ability.effect
-      if (effect?.kind === 'none' || (effect && effect.kind !== 'unknown' && effect.type !== type)) combined = natural
+      if (!effect || effect.kind === 'none' || (effect.kind !== 'unknown' && effect.type !== type)) combined = natural
       else if (effect?.kind === 'immune') combined = 0
       else if (effect?.kind === 'reduce' && effect.factor !== undefined) combined = natural * effect.factor
       if (!effect || effect.kind === 'unknown') effectText = member.ability.status === 'valid' ? 'Efeito por tipo desconhecido.' : member.ability.reason

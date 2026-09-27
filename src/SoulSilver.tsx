@@ -194,7 +194,7 @@ function AnalysisPanel({ team, dataset }: { team: Team; dataset: AuditDataset })
   const bestMove = (member: Team['members'][number] | null, target: PokemonType) => {
     if (!member) return null
     const candidates = member.moveIds.flatMap((id) => {
-      const move = dataset.moves.find((item) => item.id === id)
+      const move = moveOptions(dataset, member.variantId).find((item) => item.move.id === id)?.move
       const valid = move && move.category !== 'status' && move.type && moveOptions(dataset, member.variantId).some((option) => option.move.id === id)
       return valid && move?.type ? [{ move, value: dataset.typeChart[move.type][target] }] : []
     })
