@@ -126,6 +126,13 @@ function Picker({ label, value, options, onPick }: { label: string; value: strin
   return <div className='picker' onKeyDown={(event) => { if (event.key === 'Escape') setOpen(false) }}><span className='picker__label'>{label}</span><button type='button' className='picker__trigger' aria-label={label} aria-haspopup='listbox' aria-expanded={open} onClick={() => setOpen((current) => !current)}><span>{selected}</span><span aria-hidden='true'>⌄</span></button>{open && <div className='picker__menu' role='listbox' aria-label={label}>{options.map((option) => <button type='button' key={option.id} role='option' aria-selected={option.id === value} onClick={() => { onPick(option.id); setOpen(false) }}>{option.label}</button>)}</div>}</div>
 }
 
+const completeSampleVariantIds = new Set(['chikorita', 'hoothoot', 'wooper'])
+
+function PokedexDialog({ dataset, onChoose, onClose }: { dataset: AuditDataset; onChoose: (variantId: string) => void; onClose: () => void }) {
+  const options = variantOptions(dataset).filter(({ variant }) => completeSampleVariantIds.has(variant.id))
+  return <div className='pokedex-dialog' role='dialog' aria-modal='true' aria-labelledby='pokedex-title'><div className='pokedex-dialog__backdrop' onClick={onClose} /><div className='pokedex-dialog__panel'><header><div><span className='eyebrow'>Amostra auditada</span><h2 id='pokedex-title'>Escolha um Pokémon</h2></div><button type='button' onClick={onClose} aria-label='Fechar Pokédex'>×</button></header><div className='pokedex-dialog__grid'>{options.map(({ variant }) => <button type='button' key={variant.id} onClick={() => onChoose(variant.id)}><img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt='' /><strong>{variant.name}</strong><span>{variant.types.map((type) => typeNames[type]).join(' / ')}</span></button>)}</div></div></div>
+}
+
 function MoveSlots({ member, dataset, onEdit }: { member: Team['members'][number]; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
   const [openSlot, setOpenSlot] = useState<number | null>(null)
   const [query, setQuery] = useState('')
@@ -219,6 +226,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
   const [saveStatus, setSaveStatus] = useState('')
   const [selectedVariant, setSelectedVariant] = useState('chikorita')
   const [selectedSlot, setSelectedSlot] = useState(0)
+  const [pokemonPickerOpen, setPokemonPickerOpen] = useState(false)
   const teamRef = useRef<Team | null>(null)
   const savedRevision = useRef(0)
   const pending = useRef(Promise.resolve())
@@ -249,7 +257,8 @@ export function TeamBuilderPage({ id }: { id: string }) {
   return <div className="workspace">
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
-    <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={setSelectedSlot} />
+    <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={(slot) => { setSelectedSlot(slot); if (!team.members[slot]) setPokemonPickerOpen(true) }} />
+    {dataset && pokemonPickerOpen && <PokedexDialog dataset={dataset} onClose={() => setPokemonPickerOpen(false)} onChoose={(variantId) => { const member = team.members[selectedSlot]; edit(member ? { type: 'change-variant', memberId: member.id, variantId } : { type: 'add-member', variantId }); setPokemonPickerOpen(false) }} />}
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>
         <label className="field-label" htmlFor="team-name">Nome do time</label><input id="team-name" type="text" maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }) }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur() }} />
