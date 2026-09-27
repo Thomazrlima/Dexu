@@ -130,7 +130,7 @@ const completeSampleVariantIds = new Set(['chikorita', 'hoothoot', 'wooper'])
 
 function PokedexDialog({ dataset, onChoose, onClose }: { dataset: AuditDataset; onChoose: (variantId: string) => void; onClose: () => void }) {
   const options = variantOptions(dataset).filter(({ variant }) => completeSampleVariantIds.has(variant.id))
-  return <div className='pokedex-dialog' role='dialog' aria-modal='true' aria-labelledby='pokedex-title'><div className='pokedex-dialog__backdrop' onClick={onClose} /><div className='pokedex-dialog__panel'><header><div><span className='eyebrow'>Amostra auditada</span><h2 id='pokedex-title'>Escolha um Pokémon</h2></div><button type='button' onClick={onClose} aria-label='Fechar Pokédex'>×</button></header><div className='pokedex-dialog__grid'>{options.map(({ variant }) => <button type='button' key={variant.id} onClick={() => onChoose(variant.id)}><img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt='' /><strong>{variant.name}</strong><span>{variant.types.map((type) => typeNames[type]).join(' / ')}</span></button>)}</div></div></div>
+  return <div className='pokedex-dialog' role='dialog' aria-modal='true' aria-labelledby='pokedex-title' onKeyDown={(event) => { if (event.key === 'Escape') onClose() }}><div className='pokedex-dialog__backdrop' onClick={onClose} /><div className='pokedex-dialog__panel'><header><div><span className='eyebrow'>Pokédex da amostra</span><h2 id='pokedex-title'>Escolha um Pokémon</h2><p>Todos os candidatos exibidos possuem variante, habilidade e golpes auditados para este protótipo.</p></div><button type='button' onClick={onClose} aria-label='Fechar Pokédex'>×</button></header><div className='pokedex-dialog__grid'>{options.map(({ variant }) => <button type='button' key={variant.id} onClick={() => onChoose(variant.id)} aria-label={`Escolher #${String(variant.speciesId).padStart(3, '0')} ${variant.name}`}><span className='pokedex-card__number'>#{String(variant.speciesId).padStart(3, '0')}</span><img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt='' /><strong>{variant.name}</strong><span className='type-tags'>{variant.types.map((type) => <span key={type}>{typeNames[type]}</span>)}</span></button>)}</div></div></div>
 }
 
 function MoveSlots({ member, dataset, onEdit }: { member: Team['members'][number]; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
@@ -161,11 +161,7 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
     {!analysis.variantValid && <p role="alert">Variante inválida após revalidação: {analysis.variantReason}</p>}
     <div className="type-tags" aria-label="Tipos">{dataset.variants.find((variant) => variant.id === member.variantId)?.types.map((type) => <span key={type}>{typeNames[type]}</span>)}</div>
     <label className="field-label" htmlFor={`variant-${member.id}`}>Variante da posição {index + 1}</label>
-    <select id={`variant-${member.id}`} value={member.variantId} onChange={(event) => onEdit({ type: 'change-variant', memberId: member.id, variantId: event.target.value })}>
-      {!analysis.variantValid && <option value={member.variantId}>{analysis.variantName} — inválida após revalidação</option>}
-      {variantOptions(dataset).map(({ variant }) => <option key={variant.id} value={variant.id}>{variant.name}</option>)}
-    </select>
-    <Picker label={`Variante da posição ${index + 1}`} value={member.variantId} options={variantOptions(dataset).map(({ variant }) => ({ id: variant.id, label: variant.name }))} onPick={(variantId) => onEdit({ type: 'change-variant', memberId: member.id, variantId })} />
+    <button type='button' className='change-pokemon-button' onClick={() => window.dispatchEvent(new CustomEvent('dexu:choose-pokemon'))}>Trocar Pokémon</button>
     <AcquisitionSummary dataset={dataset} variantId={member.variantId} />
     <label className="field-label" htmlFor={`ability-${member.id}`}>Habilidade da posição {index + 1}</label>
     <select id={`ability-${member.id}`} value={member.abilityId ?? ''} onChange={(event) => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: event.target.value || null })}>
@@ -173,7 +169,8 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
       {analysis.ability.status === 'invalid' && member.abilityId && <option value={member.abilityId}>{member.abilityId} — inválida após revalidação</option>}
       {availableAbilities.map(({ ability }) => <option key={ability.id} value={ability.id}>{ability.name}</option>)}
     </select>
-    <Picker label={`Habilidade da posição ${index + 1}`} value={member.abilityId ?? ''} options={[{ id: '', label: 'Ainda não escolhida' }, ...availableAbilities.map(({ ability }) => ({ id: ability.id, label: ability.name }))]} onPick={(abilityId) => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: abilityId || null })} />
+    {availableAbilities.length === 1 && <div className='ability-compact'><span>Habilidade</span><strong>{availableAbilities[0].ability.name}</strong></div>}
+    {availableAbilities.length > 1 && <div className='ability-choices' role='group' aria-label='Habilidade'>{availableAbilities.map(({ ability }) => <button type='button' key={ability.id} className={member.abilityId === ability.id ? 'is-selected' : ''} onClick={() => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: ability.id })}>{ability.name}</button>)}</div>}
     {availableAbilities.length === 0 && <p className="field-help">Nenhuma habilidade desta variante foi auditada para oferta nesta amostra.</p>}
     {analysis.ability.status === 'invalid' && <p className="validation-note" role="alert">{analysis.ability.reason}</p>}
     {analysis.ability.status === 'valid' && <div className="ability-explanation">
@@ -224,6 +221,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
   const [nameDraft, setNameDraft] = useState('')
   const [storageError, setStorageError] = useState('')
   const [saveStatus, setSaveStatus] = useState('')
+  const [isRenaming, setIsRenaming] = useState(false)
   const [selectedVariant, setSelectedVariant] = useState('chikorita')
   const [selectedSlot, setSelectedSlot] = useState(0)
   const [pokemonPickerOpen, setPokemonPickerOpen] = useState(false)
@@ -232,6 +230,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
   const pending = useRef(Promise.resolve())
   const changeNumber = useRef(0)
   useEffect(() => { getTeam(id).then((loaded) => { if (loaded) { teamRef.current = loaded; savedRevision.current = loaded.revision; setTeam(loaded); setNameDraft(loaded.name) } else setStorageError('Time não encontrado neste navegador.') }).catch((cause: unknown) => setStorageError(cause instanceof Error ? cause.message : 'Falha ao abrir Time.')) }, [id])
+  useEffect(() => { const openPicker = () => setPokemonPickerOpen(true); window.addEventListener('dexu:choose-pokemon', openPicker); return () => window.removeEventListener('dexu:choose-pokemon', openPicker) }, [])
   function edit(intent: TeamIntent) {
     if (!dataset || !teamRef.current) return
     try {
@@ -257,6 +256,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
   return <div className="workspace">
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
+    <div className='team-heading-inline'><span className='eyebrow'>SoulSilver / Team Builder</span>{isRenaming ? <input className='team-name-inline' aria-label='Nome do time' autoFocus maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }); setIsRenaming(false) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur() }} /> : <span className='team-name-line'><h1>{team.name}</h1><button type='button' aria-label='Editar nome do time' onClick={() => setIsRenaming(true)}>✎</button></span>}<p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={(slot) => { setSelectedSlot(slot); if (!team.members[slot]) setPokemonPickerOpen(true) }} />
     {dataset && pokemonPickerOpen && <PokedexDialog dataset={dataset} onClose={() => setPokemonPickerOpen(false)} onChoose={(variantId) => { const member = team.members[selectedSlot]; edit(member ? { type: 'change-variant', memberId: member.id, variantId } : { type: 'add-member', variantId }); setPokemonPickerOpen(false) }} />}
     <div className="builder-layout"><div className="builder-edit">

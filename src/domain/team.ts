@@ -102,7 +102,8 @@ export function changeTeam(team: Team, dataset: AuditDataset, intent: TeamIntent
     const eligible = variantOptions(dataset).some(({ variant }) => variant.id === intent.variantId)
     if (!eligible) throw new Error('Variante não elegível ou fora da amostra auditada.')
     if (members.length >= 6) throw new Error('O Time aceita no máximo seis Membros.')
-    members.push({ id: crypto.randomUUID(), variantId: intent.variantId, abilityId: null, moveIds: [] })
+    const abilities = abilityOptions(dataset, intent.variantId)
+    members.push({ id: crypto.randomUUID(), variantId: intent.variantId, abilityId: abilities.length === 1 ? abilities[0].ability.id : null, moveIds: [] })
   } else {
     const index = members.findIndex((member) => member.id === intent.memberId)
     if (index < 0) throw new Error('Membro não encontrado no Time.')
