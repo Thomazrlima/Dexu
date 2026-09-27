@@ -1,5 +1,5 @@
 <p align="center">
-	<img src="assets/visuals/dexu-logo-cutout.png" alt="Dexu" width="300">
+	<img src="assets/visuals/dexu-logo-cutout-to-dark.png" alt="Dexu" width="300">
 </p>
 
 <p align="center"><strong>Monte. Explore. Conecte.</strong></p>
