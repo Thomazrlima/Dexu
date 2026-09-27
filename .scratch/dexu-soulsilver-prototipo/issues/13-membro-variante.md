@@ -4,7 +4,7 @@
 
 **Blocked by:** 11: Carregar candidato auditado e falhar com segurança; 12: Criar, nomear e retomar Time vazio.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Source:** Spec aprovada do protótipo privado de SoulSilver; usar o vocabulário de `CONTEXT.md` e respeitar os ADRs.
 
@@ -14,7 +14,11 @@
 
 **Test seam:** API de aplicação avalia elegibilidade; E2E adiciona/remove/reabre.
 
-- [ ] 0–6 Membros e espécie repetida funcionam
-- [ ] Caminho até Red e condições são explicados
-- [ ] Sétimo Membro e opção sem prova são impedidos com motivo
-- [ ] Ordem e escolhas sobrevivem ao reload
+- [x] 0–6 Membros e espécie repetida funcionam
+- [x] Caminho até Red e condições são explicados
+- [x] Sétimo Membro e opção sem prova são impedidos com motivo
+- [x] Ordem e escolhas sobrevivem ao reload
+
+## Answer
+
+Resolvida. O domínio limita o Time a seis Membros, permite espécies repetidas, oferece somente variantes elegíveis e preserva ordem, caminho de obtenção e escolhas no IndexedDB.

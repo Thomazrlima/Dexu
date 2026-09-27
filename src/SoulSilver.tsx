@@ -71,6 +71,14 @@ export function SoulSilverArea() {
   </>
 }
 
+export function CampaignPokedexPage() {
+  const { dataset, error, retry } = useAuditDataset()
+  if (error) return <DataNotice error={error} retry={retry} />
+  if (!dataset) return <p role='status'>Carregando Pokédex…</p>
+  const candidates = variantOptions(dataset).sort((left, right) => left.variant.speciesId - right.variant.speciesId)
+  return <section className='campaign-pokedex' aria-labelledby='campaign-pokedex-title'><div className='workspace__heading'><span className='eyebrow'>SoulSilver / Campanha</span><h1 id='campaign-pokedex-title'>Pokédex da campanha</h1><p>Amostra de candidatos elegíveis até antes do primeiro confronto com Red.</p></div><div className='campaign-pokedex__grid'>{candidates.map(({ variant, paths }) => <article key={variant.id}><span>#{String(variant.speciesId).padStart(3, '0')}</span><img src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${variant.speciesId}.png`} alt='' /><h2>{variant.name}</h2><div className='type-tags'>{variant.types.map((type) => <TypeBadge key={type} type={type} />)}</div><p>{paths[0]?.method}: {paths[0]?.conditions}</p></article>)}</div></section>
+}
+
 export function SavedTeamsPage() {
   const [teams, setTeams] = useState<Team[] | null>(null)
   const [error, setError] = useState('')
@@ -219,6 +227,11 @@ function AnalysisPanel({ team, dataset }: { team: Team; dataset: AuditDataset })
   </section>
 }
 
+function FieldCapabilities({ team, dataset }: { team: Team; dataset: AuditDataset }) {
+  const field = analyzeTeam(team, dataset).field
+  return <section className='field-capabilities' aria-labelledby='field-title'><div><span className='eyebrow'>Utilidade de campo</span><h2 id='field-title'>HMs no moveset</h2></div><p>{field.present.length ? field.present.map((item) => `${item.capability}: ${item.moveName} em ${item.variantName}`).join(' · ') : 'Nenhuma capacidade de campo presente.'}</p><small>Ausentes: {field.absent.join(' · ') || 'nenhuma'}. Isso não prevê o progresso da campanha.</small></section>
+}
+
 export function TeamBuilderPage({ id }: { id: string }) {
   const { dataset, error: datasetError, retry } = useAuditDataset()
   const [team, setTeam] = useState<Team | null>(null)
@@ -272,6 +285,6 @@ export function TeamBuilderPage({ id }: { id: string }) {
         <section className="add-member" aria-labelledby="add-title"><div><h3 id="add-title">Adicionar Membro</h3><p>Candidatos auditados da amostra. Espécies repetidas são permitidas.</p></div><Picker label="Candidato auditado" value={selectedVariant} options={variantOptions(dataset).map(({ variant }) => ({ id: variant.id, label: `${variant.name} · ${variant.types.map((type) => typeNames[type]).join(' / ')}` }))} onPick={setSelectedVariant} /><AcquisitionSummary dataset={dataset} variantId={selectedVariant} /><button type="button" onClick={() => edit({ type: 'add-member', variantId: selectedVariant })} disabled={team.members.length >= 6}>Adicionar ao time</button>{team.members.length >= 6 && <p>Seis posições ocupadas. Remova um Membro antes de adicionar outro.</p>}</section>
         <section aria-labelledby="members-title"><h2 className="sr-only" id="members-title">Membro em edição</h2><div className="member-grid">{team.members[selectedSlot] ? <MemberCard member={team.members[selectedSlot]} index={selectedSlot} dataset={dataset} onEdit={edit} /> : <div className="empty-slot"><span>{String(selectedSlot + 1).padStart(2, '0')}</span><p>Posição livre</p><small>Escolha um Pokémon acima para preencher este slot.</small></div>}</div></section>
       </> : <div className="empty-state"><p>Novas escolhas indisponíveis enquanto o dataset não for validado.</p><ul>{team.members.map((member, index) => <li key={member.id}>Posição {index + 1}: variante {member.variantId}; habilidade {member.abilityId ?? 'não escolhida'}; golpes {member.moveIds.join(', ') || 'nenhum'}.</li>)}</ul></div>}
-    </div>{dataset && <AnalysisPanel team={team} dataset={dataset} />}</div>
+    </div>{dataset && <><AnalysisPanel team={team} dataset={dataset} /><FieldCapabilities team={team} dataset={dataset} /></>}</div>
   </div>
 }

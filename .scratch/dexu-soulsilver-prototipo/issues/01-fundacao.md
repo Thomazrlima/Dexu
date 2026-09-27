@@ -4,7 +4,7 @@
 
 **Blocked by:** None (can start immediately).
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Source:** Spec aprovada do protótipo privado de SoulSilver; usar o vocabulário de `CONTEXT.md` e respeitar os ADRs.
 
@@ -14,6 +14,10 @@
 
 **Test seam:** Smoke de navegador para entrada → SoulSilver por teclado e em duas larguras.
 
-- [ ] App inicia, compila e oferece scripts de typecheck/teste/build
-- [ ] Só SoulSilver abre área funcional; os três outros cards dizem “em estudo, sem previsão”
-- [ ] Marca existente, foco e layout móvel/desktop aparecem desde o início
+- [x] App inicia, compila e oferece scripts de typecheck/teste/build
+- [x] Só SoulSilver abre área funcional; os três outros cards dizem “em estudo, sem previsão”
+- [x] Marca existente, foco e layout móvel/desktop aparecem desde o início
+
+## Answer
+
+Resolvida. A entrada Dexu e a área SoulSilver estão implementadas, com scripts de desenvolvimento, build, typecheck e testes; a suíte cobre a navegação por teclado em 375px e desktop.

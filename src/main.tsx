@@ -1,8 +1,8 @@
 import React from 'react'
 import { createRoot } from 'react-dom/client'
-import logoUrl from '../assets/visuals/dexu-logo-cutout.png'
+import logoUrl from '../assets/visuals/dexu-logo-cutout-to-dark.png'
 import iconUrl from '../assets/visuals/dexu-icon-cutout.png'
-import { SavedTeamsPage, SoulSilverArea, TeamBuilderPage } from './SoulSilver'
+import { CampaignPokedexPage, SavedTeamsPage, SoulSilverArea, TeamBuilderPage } from './SoulSilver'
 import './styles.css'
 
 const favicon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
@@ -70,7 +70,7 @@ function SoulSilverPage({ path }: { path: string }) {
       <SiteHeader />
       <main id="conteudo" className="page-shell page-shell--game">
         <nav className='breadcrumbs' aria-label='Navegação contextual'><a className='back-link' aria-label={path === '/soulsilver' ? 'Voltar aos jogos' : 'Voltar a SoulSilver'} href={path === '/soulsilver' ? '/' : '/soulsilver'}><span aria-hidden='true'>←</span><span>{path === '/soulsilver' ? 'Jogos' : 'SoulSilver'}</span></a></nav>
-        {path === '/soulsilver' ? <SoulSilverArea /> : path === '/soulsilver/times' ? <SavedTeamsPage /> : builderId ? <TeamBuilderPage id={builderId} /> : <p>Área não encontrada.</p>}
+        {path === '/soulsilver' ? <SoulSilverArea /> : path === '/soulsilver/pokedex' ? <CampaignPokedexPage /> : path === '/soulsilver/times' ? <SavedTeamsPage /> : builderId ? <TeamBuilderPage id={builderId} /> : <p>Área não encontrada.</p>}
       </main>
     </>
   )

@@ -86,3 +86,13 @@ test('defesa natural preserva todos os multiplicadores históricos de dupla tipa
     row.members.map((member) => member.natural)))
   expect([...factors].sort((left, right) => left - right)).toEqual([0, 0.25, 0.5, 1, 2, 4])
 })
+
+test('HMs selecionados expõem capacidades de campo sem inferir progresso', () => {
+  let team = createTeam('Campo', soulSilverDataset)
+  team = changeTeam(team, soulSilverDataset, { type: 'add-member', variantId: 'chikorita' })
+  team = changeTeam(team, soulSilverDataset, { type: 'toggle-move', memberId: team.members[0].id, moveId: 'cut' })
+
+  const analysis = analyzeTeam(team, soulSilverDataset)
+  expect(analysis.field.present).toEqual([{ capability: 'Cortar', moveName: 'Cut', variantName: 'Chikorita' }])
+  expect(analysis.field.absent).toContain('Surfar')
+})

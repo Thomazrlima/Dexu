@@ -59,6 +59,7 @@ export interface TeamAnalysis {
   members: AnalyzedMember[]
   offense: OffenseRow[]
   defense: DefenseRow[]
+  field: { present: { capability: string; moveName: string; variantName: string }[]; absent: string[] }
   partial: boolean
 }
 
@@ -214,8 +215,19 @@ export function analyzeTeam(team: Team, dataset: AuditDataset): TeamAnalysis {
       members: entries,
     }
   })
+  const fieldMoves = [
+    { moveId: 'cut', capability: 'Cortar' },
+    { moveId: 'surf', capability: 'Surfar' },
+  ]
+  const present = fieldMoves.flatMap(({ moveId, capability }) => members.flatMap((member) => {
+    const selected = team.members.find((item) => item.id === member.id)?.moveIds.includes(moveId)
+    const option = moveOptions(dataset, member.variantId).find((item) => item.move.id === moveId)
+    return selected && option && member.variantValid ? [{ capability, moveName: option.move.name, variantName: member.variantName }] : []
+  }))
+  const field = { present, absent: fieldMoves.filter(({ capability }) => !present.some((item) => item.capability === capability)).map(({ capability }) => capability) }
   return {
     members, offense, defense,
+    field,
     partial: team.members.length < 6 || members.some((member) =>
       !member.variantValid ||
       member.ability.status !== 'valid' ||

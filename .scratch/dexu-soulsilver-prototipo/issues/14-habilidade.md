@@ -4,7 +4,7 @@
 
 **Blocked by:** 13: Adicionar Membro e Variante jogável elegível.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Source:** Spec aprovada do protótipo privado de SoulSilver; usar o vocabulário de `CONTEXT.md` e respeitar os ADRs.
 
@@ -14,6 +14,10 @@
 
 **Test seam:** API do Membro com habilidade válida, impossível e antiga; UI de seleção.
 
-- [ ] Apenas habilidades positivas são oferecidas
-- [ ] Habilidade persiste no Time
-- [ ] Incompatibilidade após troca fica visível até reparo
+- [x] Apenas habilidades positivas são oferecidas
+- [x] Habilidade persiste no Time
+- [x] Incompatibilidade após troca fica visível até reparo
+
+## Answer
+
+Resolvida. As opções de habilidade são filtradas por decisões elegíveis da variante, são persistidas com o Time e permanecem visíveis como inválidas quando a variante é trocada.

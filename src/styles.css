@@ -448,7 +448,71 @@ select:disabled { border-color: #e5e7eb; background-color: #f3f5f7; color: #8295
   .analysis-columns > section { padding: 13px; }
 }
 
+/* Dexu night mode */
+:root { color: #e8f1f7; background: #0f172a; color-scheme: dark; }
+body { background: #0f172a; color: #e8f1f7; }
+.site-header { border-bottom: 1px solid rgb(148 163 184 / .14); }
+.header-context, .workspace__heading p, .team-heading-inline p, .entry-heading p, .field-help { color: #a9bac8; }
+.skip-link { background: #f8fafc; color: #0f172a; }
+.page-shell { background: radial-gradient(circle at 80% -15%, rgb(46 197 255 / .13), transparent 30rem), #0f172a; }
+.breadcrumbs .back-link { color: #c7d7e4; }
+.workspace__heading h1, .team-heading-inline h1, .entry-heading h1, .section-heading h2 { color: #f8fafc; }
+.area-action, .saved-list a, .team-strip, .coverage-matrix, .field-capabilities, .campaign-pokedex__grid article, .pokedex-dialog__grid button { border-color: #2d4155; background: #172235; color: #e8f1f7; box-shadow: 0 12px 28px rgb(0 0 0 / .16); }
+.area-action p, .saved-list span:nth-child(2), .coverage-matrix__header p, .field-capabilities p, .field-capabilities small, .campaign-pokedex__grid p { color: #a9bac8; }
+.area-action:hover, .saved-list a:hover { background: #1d2b40; }
+.team-strip__count { color: #f8fafc; }
+.team-slot { border-color: #2d4155; background: #152033; color: #e8f1f7; }
+.team-slot--empty { background: #131e2f; color: #a9bac8; }
+.team-slot:hover { border-color: #2ec5ff; background: #1c2c43; }
+.team-slot__button:hover { background: #1c2c43; }
+.team-slot__button.is-selected { background: linear-gradient(160deg, #263047, #183846); box-shadow: inset 0 3px #ff5a5f, inset 0 0 0 1px #2ec5ff, 0 8px 18px rgb(0 0 0 / .24); }
+.team-slot__button.is-selected strong { color: #ffd5d6; }
+.team-slot__sprite-fallback { background: #233a4e; color: #86d9fa; }
+.team-slot__actions { background: #202d40; box-shadow: 0 5px 12px rgb(0 0 0 / .3); }
+.team-slot__actions button { background: #202d40; color: #c7d7e4; }
+.team-slot__actions button + button { border-color: #35495c; }
+.team-slot__actions button:hover { background: #2a4054; color: #f8fafc; }
+.member-card { color: #e8f1f7; border-color: #2d4155; }
+.member-card__header::after, .moveset__heading span, .moveset__note, .acquisition { color: #a9bac8; }
+.acquisition { background: #172d3d; }
+.acquisition a { color: #86d9fa; }
+.move-slot__trigger { border-color: #41576a; background: #162234; color: #b9cbd8; }
+.move-slot__trigger.is-filled { border-color: #3b566b; background: #1b293b; color: #f0f7fb; }
+.move-slot__trigger small { color: #a9bac8; }
+.move-picker, .picker__menu { border-color: #3b566b; background: #172235; box-shadow: 0 18px 38px rgb(0 0 0 / .38); }
+.move-picker input { border-color: #455e71; background: #101a29; color: #f0f7fb; }
+.move-picker > button { color: #e8f1f7; }
+.move-picker > button:hover, .move-picker > button:focus-visible { background: #243a4c; }
+.coverage-tabs { background: #1c2b3e; }
+.coverage-tabs button { color: #b7c9d7; }
+.coverage-tabs button[aria-selected='true'] { background: #ff5a5f; color: #fff; }
+.matrix-scroll { border-color: #334a5e; background: #101a29; }
+.coverage-table thead th { background: #1a293b; color: #c8d7e3; }
+.coverage-table thead th:first-child, .coverage-table tbody th { background: #142033; color: #e8f1f7; }
+.coverage-table th, .coverage-table td { border-color: #263b4d; }
+.matrix-cell { background: #263746; color: #dbe7ee; }
+.matrix-summary--weak { background: #482832; color: #ffbbc0; }
+.matrix-summary--resist, .matrix-summary--covered { background: #173d35; color: #a5e9c7; }
+.pokedex-dialog__backdrop { background: rgb(2 8 23 / .76); }
+.pokedex-dialog__panel { border-color: #314a60; background: linear-gradient(145deg, #17263a, #101a2a); }
+.pokedex-dialog__panel header p { color: #a9bac8; }
+.pokedex-dialog__grid button:hover, .pokedex-dialog__grid button:focus-visible { background: #20354a; }
+.icon-button, .pokedex-dialog__panel header > button { border-color: #3b566b !important; background: #1b2a3d !important; color: #f8fafc; }
+.campaign-pokedex__grid article { background: #172235; }
+@media (prefers-color-scheme: light) { :root { color-scheme: dark; } }
+
 .coverage-matrix { margin-top: 24px; padding: 24px; border: 1px solid #dce5eb; border-radius: 12px; background: #fff; }
+.field-capabilities { display: grid; grid-template-columns: auto 1fr; gap: 4px 24px; margin-top: 12px; padding: 16px 20px; border: 1px solid #dce5eb; border-radius: 12px; background: #f9fcfd; }
+.field-capabilities h2 { margin: 3px 0 0; font-size: 1rem; }
+.field-capabilities p, .field-capabilities small { margin: 0; color: #405c6d; line-height: 1.45; }
+.field-capabilities small { grid-column: 2; color: #587185; }
+.campaign-pokedex__grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 14px; margin-top: 22px; }
+.campaign-pokedex__grid article { padding: 16px; border: 1px solid #dce5eb; border-radius: 12px; background: #fff; }
+.campaign-pokedex__grid article > span { color: #ff5a5f; font-size: .72rem; font-weight: 900; }
+.campaign-pokedex__grid img { display: block; width: 78px; height: 78px; margin: 4px auto; image-rendering: pixelated; }
+.campaign-pokedex__grid h2 { margin: 0; font-size: 1rem; text-align: center; }
+.campaign-pokedex__grid .type-tags { justify-content: center; }
+.campaign-pokedex__grid p { margin: 12px 0 0; color: #587185; font-size: .78rem; line-height: 1.45; }
 .coverage-matrix__header { display: flex; align-items: end; justify-content: space-between; gap: 24px; margin-bottom: 16px; }
 .coverage-matrix__header h2 { margin: 4px 0 0; font-size: 1.8rem; }
 .coverage-matrix__header p { margin: 0; color: #587185; font-size: .85rem; }

@@ -4,7 +4,7 @@
 
 **Blocked by:** 01: Entrada Dexu e área SoulSilver.
 
-**Status:** ready-for-agent
+**Status:** resolved
 
 **Source:** Spec aprovada do protótipo privado de SoulSilver; usar o vocabulário de `CONTEXT.md` e respeitar os ADRs.
 
@@ -14,6 +14,10 @@
 
 **Test seam:** IndexedDB real e fluxo navegador criar → editar nome → recarregar.
 
-- [ ] ID, versão fixa, nome, carimbos e revisão persistem
-- [ ] Só mostrar “salvo” após transação; falha mantém edição em memória
-- [ ] Time vazio e slots têm estados acessíveis em celular/desktop
+- [x] ID, versão fixa, nome, carimbos e revisão persistem
+- [x] Só mostrar “salvo” após transação; falha mantém edição em memória
+- [x] Time vazio e slots têm estados acessíveis em celular/desktop
+
+## Answer
+
+Resolvida. Times vazios são criados com identidade SoulSilver, persistidos em IndexedDB e reabertos pelo fluxo do navegador; a interface mantém slots vazios e estado de salvamento acessíveis.
