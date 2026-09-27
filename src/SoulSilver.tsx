@@ -62,7 +62,6 @@ export function SoulSilverArea() {
     </section>
     {error && <DataNotice error={error} retry={retry} />}
     {!dataset && !error && <p role="status">Carregando amostra auditada…</p>}
-    {dataset && <SampleNote dataset={dataset} />}
     <section className="area-actions" aria-labelledby="actions-title">
       <div className="section-heading"><h2 id="actions-title">Escolha seu próximo passo</h2><p>Times e escolhas ficam neste navegador.</p></div>
       <div className="area-actions__grid">
@@ -128,6 +127,12 @@ function TeamStrip({ team, dataset, selectedSlot, onSelect }: { team: Team; data
   </section>
 }
 
+function Picker({ label, value, options, onPick }: { label: string; value: string; options: { id: string; label: string }[]; onPick: (value: string) => void }) {
+  const [open, setOpen] = useState(false)
+  const selected = options.find((option) => option.id === value)?.label ?? 'Escolher'
+  return <div className='picker'><span className='picker__label'>{label}</span><button type='button' className='picker__trigger' aria-label={label} aria-haspopup='listbox' aria-expanded={open} onClick={() => setOpen((current) => !current)}><span>{selected}</span><span aria-hidden='true'>⌄</span></button>{open && <div className='picker__menu' role='listbox' aria-label={label}>{options.map((option) => <button type='button' key={option.id} role='option' aria-selected={option.id === value} onClick={() => { onPick(option.id); setOpen(false) }}>{option.label}</button>)}</div>}</div>
+}
+
 function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'][number]; index: number; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
   const analysis = analyzeTeam({ id: '', name: '', gameVersion: 'soulsilver', createdAt: '', updatedAt: '', revision: 0, datasetVersion: '', members: [member] }, dataset).members[0]
   const availableMoves = moveOptions(dataset, member.variantId)
@@ -142,6 +147,7 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
       {!analysis.variantValid && <option value={member.variantId}>{analysis.variantName} — inválida após revalidação</option>}
       {variantOptions(dataset).map(({ variant }) => <option key={variant.id} value={variant.id}>{variant.name}</option>)}
     </select>
+    <Picker label={`Variante da posição ${index + 1}`} value={member.variantId} options={variantOptions(dataset).map(({ variant }) => ({ id: variant.id, label: variant.name }))} onPick={(variantId) => onEdit({ type: 'change-variant', memberId: member.id, variantId })} />
     <AcquisitionSummary dataset={dataset} variantId={member.variantId} />
     <label className="field-label" htmlFor={`ability-${member.id}`}>Habilidade da posição {index + 1}</label>
     <select id={`ability-${member.id}`} value={member.abilityId ?? ''} onChange={(event) => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: event.target.value || null })}>
@@ -149,6 +155,7 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
       {analysis.ability.status === 'invalid' && member.abilityId && <option value={member.abilityId}>{member.abilityId} — inválida após revalidação</option>}
       {availableAbilities.map(({ ability }) => <option key={ability.id} value={ability.id}>{ability.name}</option>)}
     </select>
+    <Picker label={`Habilidade da posição ${index + 1}`} value={member.abilityId ?? ''} options={[{ id: '', label: 'Ainda não escolhida' }, ...availableAbilities.map(({ ability }) => ({ id: ability.id, label: ability.name }))]} onPick={(abilityId) => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: abilityId || null })} />
     {availableAbilities.length === 0 && <p className="field-help">Nenhuma habilidade desta variante foi auditada para oferta nesta amostra.</p>}
     {analysis.ability.status === 'invalid' && <p className="validation-note" role="alert">{analysis.ability.reason}</p>}
     {analysis.ability.status === 'valid' && <div className="ability-explanation">
@@ -166,6 +173,22 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
 function AnalysisPanel({ team, dataset }: { team: Team; dataset: AuditDataset }) {
   const analysis = analyzeTeam(team, dataset)
   const covered = analysis.offense.filter((row) => row.members.length > 0).length
+  const [tab, setTab] = useState<'defense' | 'offense'>('defense')
+  const slots = Array.from({ length: 6 }, (_, index) => team.members[index] ?? null)
+  const bestMove = (member: Team['members'][number] | null, target: PokemonType) => {
+    if (!member) return null
+    const candidates = member.moveIds.flatMap((id) => {
+      const move = dataset.moves.find((item) => item.id === id)
+      const valid = move && move.category !== 'status' && move.type && moveOptions(dataset, member.variantId).some((option) => option.move.id === id)
+      return valid && move?.type ? [{ move, value: dataset.typeChart[move.type][target] }] : []
+    })
+    return candidates.sort((left, right) => right.value - left.value)[0] ?? null
+  }
+  return <section className='coverage-matrix' aria-labelledby='analysis-title'>
+    <header className='coverage-matrix__header'><div><span className='eyebrow'>Análise do time</span><h2 id='analysis-title'>Cobertura</h2></div><p>{analysis.partial ? 'Leitura parcial' : 'Leitura atualizada'} · {covered}/17 tipos com resposta ofensiva.</p></header>
+    <div className='coverage-tabs' role='tablist' aria-label='Modo da cobertura'><button type='button' role='tab' aria-selected={tab === 'defense'} onClick={() => setTab('defense')}>Defensiva</button><button type='button' role='tab' aria-selected={tab === 'offense'} onClick={() => setTab('offense')}>Ofensiva</button></div>
+    <div className='matrix-scroll'><table className='coverage-table'><thead><tr><th scope='col'>{tab === 'defense' ? 'Tipo atacante' : 'Tipo defensor'}</th>{slots.map((member, index) => <th scope='col' key={member?.id ?? index}><span>{String(index + 1).padStart(2, '0')}</span>{member ? dataset.variants.find((item) => item.id === member.variantId)?.name ?? member.variantId : '—'}</th>)}<th scope='col'>{tab === 'defense' ? 'Fracos' : 'Cobrem'}</th><th scope='col'>Resist.</th></tr></thead><tbody>{analysis.defense.map((row) => { const offense = slots.map((member) => bestMove(member, row.type)); const defense = slots.map((member) => member ? row.members.find((entry) => entry.memberId === member.id) : undefined); return <tr key={row.type}><th scope='row'>{typeNames[row.type]}</th>{tab === 'defense' ? defense.map((entry, index) => <td key={index}><button type='button' className={`matrix-cell matrix-cell--${entry?.combined === 0 ? 'immune' : entry && entry.combined !== null && entry.combined > 1 ? 'weak' : entry && entry.combined !== null && entry.combined < 1 ? 'resist' : 'neutral'}`} title={entry ? `${entry.variantName}: ${entry.effect}` : 'Slot vazio'}>{entry?.combined === null || !entry ? '—' : `${entry.combined}×`}</button></td>) : offense.map((entry, index) => <td key={index}><button type='button' className={`matrix-cell matrix-cell--${entry?.value && entry.value > 1 ? 'weak' : entry?.value && entry.value < 1 ? 'resist' : 'neutral'}`} title={entry ? `${entry.move.name} · ${entry.value}×` : 'Sem golpe de dano válido'}>{entry ? `${entry.value}×` : '—'}</button></td>)}<td>{tab === 'defense' ? row.combinedWeak : offense.filter((entry) => entry && entry.value > 1).length}</td><td>{tab === 'defense' ? row.combinedResistant + row.combinedImmune : '—'}</td></tr>})}</tbody></table></div>
+  </section>
   return <section className="analysis-panel" aria-labelledby="analysis-title">
     <div className="analysis-panel__header"><span className="eyebrow">Leitura do Time</span><h2 id="analysis-title">Cobertura</h2><p role="status" aria-live="polite">{team.members.length} de 6 membros; {covered} de 17 tipos com cobertura ofensiva. {analysis.partial ? 'Análise parcial.' : 'Análise das escolhas atuais.'}</p></div>
     {team.members.length === 0 ? <div className="empty-state"><h3>O plano começa vazio</h3><p>Adicione um Membro para ver a análise. As seis posições livres ainda não contam como Membros.</p></div> : <>
@@ -222,8 +245,8 @@ export function TeamBuilderPage({ id }: { id: string }) {
         {storageError && <p role="alert">{storageError} <button type="button" onClick={() => { if (teamRef.current) edit({ type: 'rename', name: teamRef.current.name }) }}>Tentar salvar novamente</button></p>}
       </section>
       {dataset ? <>
-        <section className="add-member" aria-labelledby="add-title"><div><h3 id="add-title">Adicionar Membro</h3><p>Candidatos auditados da amostra. Espécies repetidas são permitidas.</p></div><label className="field-label" htmlFor="candidate">Candidato auditado</label><select id="candidate" value={selectedVariant} onChange={(event) => setSelectedVariant(event.target.value)}>{variantOptions(dataset).map(({ variant }) => <option key={variant.id} value={variant.id}>{variant.name} · {variant.types.map((type) => typeNames[type]).join(' / ')}</option>)}</select><AcquisitionSummary dataset={dataset} variantId={selectedVariant} /><button type="button" onClick={() => edit({ type: 'add-member', variantId: selectedVariant })} disabled={team.members.length >= 6}>Adicionar ao time</button>{team.members.length >= 6 && <p>Seis posições ocupadas. Remova um Membro antes de adicionar outro.</p>}</section>
-        <section aria-labelledby="members-title"><h2 className="sr-only" id="members-title">Membros e posições</h2><div className="member-grid">{team.members.map((member, index) => <MemberCard key={member.id} member={member} index={index} dataset={dataset} onEdit={edit} />)}{Array.from({ length: 6 - team.members.length }, (_, index) => <div className="empty-slot" key={`empty-${index}`}><span>{String(team.members.length + index + 1).padStart(2, '0')}</span><p>Posição livre</p></div>)}</div></section>
+        <section className="add-member" aria-labelledby="add-title"><div><h3 id="add-title">Adicionar Membro</h3><p>Candidatos auditados da amostra. Espécies repetidas são permitidas.</p></div><Picker label="Candidato auditado" value={selectedVariant} options={variantOptions(dataset).map(({ variant }) => ({ id: variant.id, label: `${variant.name} · ${variant.types.map((type) => typeNames[type]).join(' / ')}` }))} onPick={setSelectedVariant} /><AcquisitionSummary dataset={dataset} variantId={selectedVariant} /><button type="button" onClick={() => edit({ type: 'add-member', variantId: selectedVariant })} disabled={team.members.length >= 6}>Adicionar ao time</button>{team.members.length >= 6 && <p>Seis posições ocupadas. Remova um Membro antes de adicionar outro.</p>}</section>
+        <section aria-labelledby="members-title"><h2 className="sr-only" id="members-title">Membro em edição</h2><div className="member-grid">{team.members[selectedSlot] ? <MemberCard member={team.members[selectedSlot]} index={selectedSlot} dataset={dataset} onEdit={edit} /> : <div className="empty-slot"><span>{String(selectedSlot + 1).padStart(2, '0')}</span><p>Posição livre</p><small>Escolha um Pokémon acima para preencher este slot.</small></div>}</div></section>
       </> : <div className="empty-state"><p>Novas escolhas indisponíveis enquanto o dataset não for validado.</p><ul>{team.members.map((member, index) => <li key={member.id}>Posição {index + 1}: variante {member.variantId}; habilidade {member.abilityId ?? 'não escolhida'}; golpes {member.moveIds.join(', ') || 'nenhum'}.</li>)}</ul></div>}
     </div>{dataset && <AnalysisPanel team={team} dataset={dataset} />}</div>
   </div>
