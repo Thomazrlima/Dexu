@@ -359,6 +359,10 @@ input[type="text"], select { width: 100%; min-height: 46px; padding: 9px 12px; b
 .team-slot__sprite[hidden] { display: none; }
 .team-slot strong { max-width: 100%; overflow: hidden; font-size: .86rem; line-height: 1.2; text-overflow: ellipsis; white-space: nowrap; }
 .team-slot > span:last-child { color: #587185; font-size: .68rem; line-height: 1.25; }
+.team-slot__actions { display: flex; width: 100%; border-top: 1px solid #e5edf1; }
+.team-slot__actions button { width: 50%; min-height: 30px; border: 0; background: #fff; color: #587185; font-size: .66rem; font-weight: 800; }
+.team-slot__actions button + button { border-left: 1px solid #e5edf1; color: #9b2e38; }
+.team-slot__actions button:hover { background: #f1fbfe; color: #075f92; }
 .team-slot--empty { border-style: dashed; background: #fbfcfd; color: #53687a; }
 .team-slot__empty-icon { display: grid; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: #eaf4f8; color: #0b718f; font-size: 1.35rem; font-weight: 500; }
 
@@ -522,6 +526,7 @@ select:disabled { border-color: #e5e7eb; background-color: #f3f5f7; color: #8295
 .team-name-inline { width: min(100%, 520px); margin: 5px 0 9px; font: 800 clamp(2rem, 4vw, 3.6rem) 'Plus Jakarta Sans', Inter, sans-serif; letter-spacing: -.055em; }
 .builder-toolbar, .add-member { display: none !important; }
 .member-card { max-width: none; margin: 0; border: 0; border-top: 1px solid #dbe3e8; border-radius: 0; box-shadow: none; background: transparent; }
+.member-card__header .text-button, .change-pokemon-button { display: none; }
 .member-card .field-label, .member-card select { display: none; }
 .ability-compact { display: inline-flex; align-items: center; gap: 8px; margin-top: 14px; color: #587185; font-size: .8rem; }
 .ability-compact strong { padding: 5px 9px; border-radius: 999px; background: #eaf4f8; color: #075f92; }

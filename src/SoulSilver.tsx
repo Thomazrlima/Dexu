@@ -85,7 +85,7 @@ function AcquisitionSummary({ dataset, variantId }: { dataset: AuditDataset; var
   return option && <div className="acquisition"><strong>{option.paths[0]?.method}.</strong> {option.paths.map((path) => path.conditions).join(' ')} <a href={dataset.evidence.find((item) => item.id === option.paths[0]?.evidenceIds[0])?.reference} target="_blank" rel="noreferrer">Ver fonte</a></div>
 }
 
-function TeamStrip({ team, dataset, selectedSlot, onSelect }: { team: Team; dataset: AuditDataset | null; selectedSlot: number; onSelect: (index: number) => void }) {
+function TeamStrip({ team, dataset, selectedSlot, onSelect, onChange, onRemove }: { team: Team; dataset: AuditDataset | null; selectedSlot: number; onSelect: (index: number) => void; onChange: (index: number) => void; onRemove: (memberId: string) => void }) {
   return <section className='team-strip' aria-label='Seu time'>
     <div className='team-strip__heading'>
       <div><span className='eyebrow'>Seu time</span><h2 id='team-strip-title'>Seis posições para a jornada</h2></div>
@@ -114,6 +114,7 @@ function TeamStrip({ team, dataset, selectedSlot, onSelect }: { team: Team; data
           <strong>{name}</strong>
           <span>{variant?.types.map((type) => typeNames[type]).join(' / ') ?? 'Em revisão'}</span>
           </button>
+          <span className='team-slot__actions'><button type='button' onClick={() => onChange(index)} aria-label={`Trocar ${name}`}>Trocar</button><button type='button' onClick={() => onRemove(member.id)} aria-label={`Remover ${name}`}>Remover</button></span>
         </li>
       })}
     </ul>
@@ -155,6 +156,7 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
   const analysis = analyzeTeam({ id: '', name: '', gameVersion: 'soulsilver', createdAt: '', updatedAt: '', revision: 0, datasetVersion: '', members: [member] }, dataset).members[0]
   const availableMoves = moveOptions(dataset, member.variantId)
   const availableAbilities = abilityOptions(dataset, member.variantId)
+  const defensiveAbilities = availableAbilities.filter(({ ability }) => dataset.abilityEffects.find((effect) => effect.abilityId === ability.id)?.kind !== 'none')
   const invalidMoves = analysis.moves.filter((move) => move.status === 'invalid')
   return <article className="member-card" aria-labelledby={`member-${member.id}`}>
     <div className="member-card__header"><span className="member-card__number">{String(index + 1).padStart(2, '0')}</span><div><span className="eyebrow">Membro do Time</span><h3 id={`member-${member.id}`}>{analysis.variantName}</h3></div><button type="button" className="text-button" onClick={() => onEdit({ type: 'remove-member', memberId: member.id })} aria-label={`Remover ${analysis.variantName} da posição ${index + 1}`}>Remover</button></div>
@@ -169,8 +171,8 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
       {analysis.ability.status === 'invalid' && member.abilityId && <option value={member.abilityId}>{member.abilityId} — inválida após revalidação</option>}
       {availableAbilities.map(({ ability }) => <option key={ability.id} value={ability.id}>{ability.name}</option>)}
     </select>
-    {availableAbilities.length === 1 && <div className='ability-compact'><span>Habilidade</span><strong>{availableAbilities[0].ability.name}</strong></div>}
-    {availableAbilities.length > 1 && <div className='ability-choices' role='group' aria-label='Habilidade'>{availableAbilities.map(({ ability }) => <button type='button' key={ability.id} className={member.abilityId === ability.id ? 'is-selected' : ''} onClick={() => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: ability.id })}>{ability.name}</button>)}</div>}
+    {defensiveAbilities.length === 1 && <div className='ability-compact'><span>Habilidade defensiva</span><strong>{defensiveAbilities[0].ability.name}</strong></div>}
+    {defensiveAbilities.length > 1 && <div className='ability-choices' role='group' aria-label='Habilidade defensiva'>{defensiveAbilities.map(({ ability }) => <button type='button' key={ability.id} className={member.abilityId === ability.id ? 'is-selected' : ''} onClick={() => onEdit({ type: 'choose-ability', memberId: member.id, abilityId: ability.id })}>{ability.name}</button>)}</div>}
     {availableAbilities.length === 0 && <p className="field-help">Nenhuma habilidade desta variante foi auditada para oferta nesta amostra.</p>}
     {analysis.ability.status === 'invalid' && <p className="validation-note" role="alert">{analysis.ability.reason}</p>}
     {analysis.ability.status === 'valid' && <div className="ability-explanation">
@@ -257,7 +259,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
     <div className='team-heading-inline'><span className='eyebrow'>SoulSilver / Team Builder</span>{isRenaming ? <input className='team-name-inline' aria-label='Nome do time' autoFocus maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }); setIsRenaming(false) }} onKeyDown={(event) => { if (event.key === 'Enter' || event.key === 'Escape') event.currentTarget.blur() }} /> : <span className='team-name-line'><h1>{team.name}</h1><button type='button' aria-label='Editar nome do time' onClick={() => setIsRenaming(true)}>✎</button></span>}<p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
-    <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={(slot) => { setSelectedSlot(slot); if (!team.members[slot]) setPokemonPickerOpen(true) }} />
+    <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={(slot) => { setSelectedSlot(slot); if (!team.members[slot]) setPokemonPickerOpen(true) }} onChange={(slot) => { setSelectedSlot(slot); setPokemonPickerOpen(true) }} onRemove={(memberId) => edit({ type: 'remove-member', memberId })} />
     {dataset && pokemonPickerOpen && <PokedexDialog dataset={dataset} onClose={() => setPokemonPickerOpen(false)} onChoose={(variantId) => { const member = team.members[selectedSlot]; edit(member ? { type: 'change-variant', memberId: member.id, variantId } : { type: 'add-member', variantId }); setPokemonPickerOpen(false) }} />}
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>
