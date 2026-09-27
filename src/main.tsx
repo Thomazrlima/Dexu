@@ -1,6 +1,7 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
-import logoUrl from '../assets/visuals/dexu-logo-cutout-to-dark.png'
+import lightLogoUrl from '../assets/visuals/dexu-logo-cutout.png'
+import darkLogoUrl from '../assets/visuals/dexu-logo-cutout-to-dark.png'
 import iconUrl from '../assets/visuals/dexu-icon-cutout.png'
 import { CampaignPokedexPage, SavedTeamsPage, SoulSilverArea, TeamBuilderPage } from './SoulSilver'
 import './styles.css'
@@ -11,21 +12,30 @@ document.title = window.location.pathname.startsWith('/soulsilver') ? 'SoulSilve
 
 const upcomingGames = ['HeartGold', 'Emerald', 'Platinum'] as const
 
-function SiteHeader() {
+type Theme = 'light' | 'dark'
+
+function ThemeToggle({ theme, onToggle }: { theme: Theme; onToggle: () => void }) {
+  const isDark = theme === 'dark'
+  return <button className='theme-toggle' type='button' onClick={onToggle}>{isDark ? 'Modo claro' : 'Modo escuro'}</button>
+}
+
+function SiteHeader({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
+  const logoUrl = theme === 'dark' ? darkLogoUrl : lightLogoUrl
   return (
     <header className="site-header">
       <div className="brand">
         <img className="brand__logo" src={logoUrl} alt="Dexu. Monte, explore, conecte." />
       </div>
       <span className="header-context">Protótipo privado</span>
+      <ThemeToggle theme={theme} onToggle={onToggleTheme} />
     </header>
   )
 }
 
-function EntryPage() {
+function EntryPage({ theme, onToggleTheme }: { theme: Theme; onToggleTheme: () => void }) {
   return (
     <>
-      <SiteHeader />
+      <SiteHeader theme={theme} onToggleTheme={onToggleTheme} />
       <main id="conteudo" className="page-shell">
         <section className="entry-heading" aria-labelledby="entry-title">
           <h1 id="entry-title">Escolha seu jogo</h1>
@@ -63,11 +73,11 @@ function EntryPage() {
   )
 }
 
-function SoulSilverPage({ path }: { path: string }) {
+function SoulSilverPage({ path, theme, onToggleTheme }: { path: string; theme: Theme; onToggleTheme: () => void }) {
   const builderId = path.match(/^\/soulsilver\/times\/([a-f0-9-]+)$/)?.[1]
   return (
     <>
-      <SiteHeader />
+      <SiteHeader theme={theme} onToggleTheme={onToggleTheme} />
       <main id="conteudo" className="page-shell page-shell--game">
         <nav className='breadcrumbs' aria-label='Navegação contextual'><a className='back-link' aria-label={path === '/soulsilver' ? 'Voltar aos jogos' : 'Voltar a SoulSilver'} href={path === '/soulsilver' ? '/' : '/soulsilver'}><span aria-hidden='true'>←</span><span>{path === '/soulsilver' ? 'Jogos' : 'SoulSilver'}</span></a></nav>
         {path === '/soulsilver' ? <SoulSilverArea /> : path === '/soulsilver/pokedex' ? <CampaignPokedexPage /> : path === '/soulsilver/times' ? <SavedTeamsPage /> : builderId ? <TeamBuilderPage id={builderId} /> : <p>Área não encontrada.</p>}
@@ -77,10 +87,19 @@ function SoulSilverPage({ path }: { path: string }) {
 }
 
 function App() {
+  const [theme, setTheme] = useState<Theme>(() => (window.localStorage.getItem('dexu-theme') === 'dark' ? 'dark' : 'light'))
+
+  useEffect(() => {
+    document.documentElement.dataset.theme = theme
+    window.localStorage.setItem('dexu-theme', theme)
+  }, [theme])
+
+  const toggleTheme = () => setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+
   return (
     <>
       <a className="skip-link" href="#conteudo">Pular para o conteúdo</a>
-      {window.location.pathname.startsWith('/soulsilver') ? <SoulSilverPage path={window.location.pathname} /> : <EntryPage />}
+      {window.location.pathname.startsWith('/soulsilver') ? <SoulSilverPage path={window.location.pathname} theme={theme} onToggleTheme={toggleTheme} /> : <EntryPage theme={theme} onToggleTheme={toggleTheme} />}
     </>
   )
 }

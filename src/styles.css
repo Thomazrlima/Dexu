@@ -449,8 +449,10 @@ select:disabled { border-color: #e5e7eb; background-color: #f3f5f7; color: #8295
 }
 
 /* Dexu night mode */
-:root { color: #e8f1f7; background: #0f172a; color-scheme: dark; }
-body { background: #0f172a; color: #e8f1f7; }
+:root[data-theme='dark'] { color: #e8f1f7; background: #0f172a; color-scheme: dark; }
+:root[data-theme='dark'] body { background: #0f172a; color: #e8f1f7; }
+/* Legacy global overrides retired: theme styles now live at the end of this file. */
+/*
 .site-header { border-bottom: 1px solid rgb(148 163 184 / .14); }
 .header-context, .workspace__heading p, .team-heading-inline p, .entry-heading p, .field-help { color: #a9bac8; }
 .skip-link { background: #f8fafc; color: #0f172a; }
@@ -500,6 +502,7 @@ body { background: #0f172a; color: #e8f1f7; }
 .icon-button, .pokedex-dialog__panel header > button { border-color: #3b566b !important; background: #1b2a3d !important; color: #f8fafc; }
 .campaign-pokedex__grid article { background: #172235; }
 @media (prefers-color-scheme: light) { :root { color-scheme: dark; } }
+*/
 
 .coverage-matrix { margin-top: 24px; padding: 24px; border: 1px solid #dce5eb; border-radius: 12px; background: #fff; }
 .field-capabilities { display: grid; grid-template-columns: auto 1fr; gap: 4px 24px; margin-top: 12px; padding: 16px 20px; border: 1px solid #dce5eb; border-radius: 12px; background: #f9fcfd; }
@@ -609,6 +612,39 @@ body { background: #0f172a; color: #e8f1f7; }
 .type-badge--normal { background: var(--type-normal); }.type-badge--fire { background: var(--type-fire); }.type-badge--water { background: var(--type-water); }.type-badge--electric { background: var(--type-electric); }.type-badge--grass { background: var(--type-grass); }.type-badge--ice { background: var(--type-ice); }.type-badge--fighting { background: var(--type-fighting); }.type-badge--poison { background: var(--type-poison); }.type-badge--ground { background: var(--type-ground); }.type-badge--flying { background: var(--type-flying); }.type-badge--psychic { background: var(--type-psychic); }.type-badge--bug { background: var(--type-bug); }.type-badge--rock { background: var(--type-rock); }.type-badge--ghost { background: var(--type-ghost); }.type-badge--dragon { background: var(--type-dragon); }.type-badge--dark { background: var(--type-dark); }.type-badge--steel { background: var(--type-steel); }
 .team-slot { transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease; }
 .team-slot:hover { transform: translateY(-3px); border-color: #8bdcfb; box-shadow: 0 10px 20px rgb(15 23 42 / .08); }
+
+.theme-toggle { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 6px 10px; border: 1px solid #cbd9e1; border-radius: 999px; background: #fff; color: #243447; font: 800 .76rem/1 Inter, sans-serif; }
+.theme-toggle:hover { border-color: #2ec5ff; background: #eefbff; }
+.theme-toggle:focus-visible { outline: 3px solid rgb(46 197 255 / .42); outline-offset: 3px; }
+:root[data-theme='dark'] .site-header { border-bottom: 1px solid rgb(148 163 184 / .2); }
+:root[data-theme='dark'] .page-shell { background: radial-gradient(circle at 84% -12%, rgb(46 197 255 / .12), transparent 30rem), #0f172a; }
+:root[data-theme='dark'] .header-context, :root[data-theme='dark'] .team-heading-inline p, :root[data-theme='dark'] .entry-heading p, :root[data-theme='dark'] .field-help, :root[data-theme='dark'] .moveset__heading span, :root[data-theme='dark'] .moveset__note { color: #adc3d3; }
+:root[data-theme='dark'] .workspace__heading h1, :root[data-theme='dark'] .team-heading-inline h1, :root[data-theme='dark'] .entry-heading h1, :root[data-theme='dark'] .section-heading h2, :root[data-theme='dark'] .coverage-matrix__header h2, :root[data-theme='dark'] .moveset__heading h4 { color: #f8fafc; }
+:root[data-theme='dark'] .team-strip, :root[data-theme='dark'] .coverage-matrix, :root[data-theme='dark'] .field-capabilities, :root[data-theme='dark'] .campaign-pokedex__grid article, :root[data-theme='dark'] .pokedex-dialog__grid button { border-color: #2d4155; background: #172235; color: #e8f1f7; }
+:root[data-theme='dark'] .coverage-matrix__header p, :root[data-theme='dark'] .field-capabilities p, :root[data-theme='dark'] .field-capabilities small, :root[data-theme='dark'] .campaign-pokedex__grid p { color: #adc3d3; }
+:root[data-theme='dark'] .team-slot { border-color: #2d4155; background: #152033; color: #e8f1f7; }
+:root[data-theme='dark'] .team-slot--empty { background: #131e2f; color: #adc3d3; }
+:root[data-theme='dark'] .team-slot:hover, :root[data-theme='dark'] .team-slot__button:hover { background: #1c2c43; border-color: #2ec5ff; }
+:root[data-theme='dark'] .team-slot__button.is-selected { background: linear-gradient(160deg, #263047, #183846); box-shadow: inset 0 3px #ff5a5f, inset 0 0 0 1px #2ec5ff; }
+:root[data-theme='dark'] .member-card { border-color: #2d4155; color: #e8f1f7; }
+:root[data-theme='dark'] .acquisition { background: #172d3d; color: #d5e7f2; }
+:root[data-theme='dark'] .move-slot__trigger { border-color: #41576a; background: #162234; color: #c8d9e5; }
+:root[data-theme='dark'] .move-slot__trigger.is-filled { border-color: #3b566b; background: #1b293b; color: #f0f7fb; }
+:root[data-theme='dark'] .move-slot__trigger small { color: #adc3d3; }
+:root[data-theme='dark'] .move-picker, :root[data-theme='dark'] .picker__menu, :root[data-theme='dark'] .pokedex-dialog__panel { border-color: #3b566b; background: #172235; color: #e8f1f7; }
+:root[data-theme='dark'] .move-picker input { border-color: #455e71; background: #101a29; color: #f0f7fb; }
+:root[data-theme='dark'] .coverage-tabs { background: #1c2b3e; }
+:root[data-theme='dark'] .coverage-tabs button { color: #d5e2eb; }
+:root[data-theme='dark'] .coverage-tabs button[aria-selected='true'] { background: #ff5a5f; color: #fff; }
+:root[data-theme='dark'] .matrix-scroll { border-color: #334a5e; background: #101a29; }
+:root[data-theme='dark'] .coverage-table thead th { background: #1a293b; color: #d5e2eb; }
+:root[data-theme='dark'] .coverage-table thead th:first-child, :root[data-theme='dark'] .coverage-table tbody th { background: #142033; color: #f8fafc; }
+:root[data-theme='dark'] .coverage-table th, :root[data-theme='dark'] .coverage-table td { border-color: #263b4d; }
+:root[data-theme='dark'] .matrix-cell { background: #263746; color: #e7f1f7; }
+:root[data-theme='dark'] .matrix-summary--weak { background: #482832; color: #ffced1; }
+:root[data-theme='dark'] .matrix-summary--resist, :root[data-theme='dark'] .matrix-summary--covered { background: #173d35; color: #b9f0d3; }
+:root[data-theme='dark'] .theme-toggle { border-color: #3b566b; background: #1b2a3d; color: #f8fafc; }
+:root[data-theme='dark'] .theme-toggle:hover { border-color: #2ec5ff; background: #243a4c; }
 .team-slot__button.is-selected { box-shadow: inset 0 3px #ff5a5f, inset 0 0 0 1px #2ec5ff, 0 8px 18px rgb(46 197 255 / .14); }
 .team-slot__types { display: flex; flex-wrap: wrap; justify-content: center; gap: 4px; min-height: 20px; padding: 0 5px 3px; }
 .team-slot__types .type-badge { font-size: .56rem; }
