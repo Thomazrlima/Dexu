@@ -93,7 +93,7 @@ function AcquisitionSummary({ dataset, variantId }: { dataset: AuditDataset; var
   return option && <div className="acquisition"><strong>{option.paths[0]?.method}.</strong> {option.paths.map((path) => path.conditions).join(' ')} <a href={dataset.evidence.find((item) => item.id === option.paths[0]?.evidenceIds[0])?.reference} target="_blank" rel="noreferrer">Ver fonte</a></div>
 }
 
-function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset | null }) {
+function TeamStrip({ team, dataset, selectedSlot, onSelect }: { team: Team; dataset: AuditDataset | null; selectedSlot: number; onSelect: (index: number) => void }) {
   return <section className='team-strip' aria-label='Seu time'>
     <div className='team-strip__heading'>
       <div><span className='eyebrow'>Seu time</span><h2 id='team-strip-title'>Seis posições para a jornada</h2></div>
@@ -103,14 +103,17 @@ function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset | null
       {Array.from({ length: 6 }, (_, index) => {
         const member = team.members[index]
         if (!member) return <li className='team-slot team-slot--empty' key={index}>
+          <button type='button' className={selectedSlot === index ? 'team-slot__button is-selected' : 'team-slot__button'} aria-pressed={selectedSlot === index} onClick={() => onSelect(team.members.length)} aria-label={`Selecionar slot vazio ${index + 1}`}>
           <span className='team-slot__number'>{String(index + 1).padStart(2, '0')}</span>
           <span className='team-slot__empty-icon' aria-hidden='true'>+</span>
           <strong>Slot vazio</strong>
           <span>Adicionar Pokémon</span>
+          </button>
         </li>
         const variant = dataset?.variants.find((item) => item.id === member.variantId)
         const name = variant?.name ?? member.variantId
         return <li className='team-slot' key={member.id}>
+          <button type='button' className={selectedSlot === index ? 'team-slot__button is-selected' : 'team-slot__button'} aria-pressed={selectedSlot === index} onClick={() => onSelect(index)} aria-label={`Editar ${name}, posiÃ§Ã£o ${index + 1}`}>
           <span className='team-slot__number'>{String(index + 1).padStart(2, '0')}</span>
           <span className='team-slot__sprite-frame'>
             <span className='team-slot__sprite-fallback' aria-hidden='true'>{name.slice(0, 1).toUpperCase()}</span>
@@ -118,6 +121,7 @@ function TeamStrip({ team, dataset }: { team: Team; dataset: AuditDataset | null
           </span>
           <strong>{name}</strong>
           <span>{variant?.types.map((type) => typeNames[type]).join(' / ') ?? 'Em revisão'}</span>
+          </button>
         </li>
       })}
     </ul>
@@ -179,6 +183,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
   const [storageError, setStorageError] = useState('')
   const [saveStatus, setSaveStatus] = useState('')
   const [selectedVariant, setSelectedVariant] = useState('chikorita')
+  const [selectedSlot, setSelectedSlot] = useState(0)
   const teamRef = useRef<Team | null>(null)
   const savedRevision = useRef(0)
   const pending = useRef(Promise.resolve())
@@ -190,6 +195,8 @@ export function TeamBuilderPage({ id }: { id: string }) {
       const next = changeTeam(teamRef.current, dataset, intent)
       teamRef.current = next
       setTeam(next)
+      if (intent.type === 'add-member') setSelectedSlot(next.members.length - 1)
+      if (intent.type === 'remove-member') setSelectedSlot((slot) => Math.min(slot, next.members.length))
       setStorageError('')
       setSaveStatus('Salvando…')
       const currentChange = ++changeNumber.current
@@ -208,7 +215,7 @@ export function TeamBuilderPage({ id }: { id: string }) {
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
     {dataset && <SampleNote dataset={dataset} />}
-    <TeamStrip team={team} dataset={dataset} />
+    <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={setSelectedSlot} />
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>
         <label className="field-label" htmlFor="team-name">Nome do time</label><input id="team-name" type="text" maxLength={60} value={nameDraft} onChange={(event) => setNameDraft(event.target.value)} onBlur={() => { if (nameDraft.trim() && nameDraft.trim() !== team.name) edit({ type: 'rename', name: nameDraft }) }} onKeyDown={(event) => { if (event.key === 'Enter') event.currentTarget.blur() }} />

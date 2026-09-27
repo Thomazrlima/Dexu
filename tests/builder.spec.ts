@@ -87,6 +87,20 @@ test('slot preserva fallback quando o sprite remoto falha', async ({ page }) => 
   await expect(slot.getByRole('img', { name: 'Sprite de Vulpix' })).toBeHidden()
 })
 
+test('slots controlam qual membro está aberto no editor', async ({ page }) => {
+  await page.goto('/soulsilver')
+  await page.getByRole('button', { name: 'Criar time' }).click()
+  await page.getByRole('button', { name: 'Adicionar ao time' }).click()
+  await page.getByRole('button', { name: 'Selecionar slot vazio 2' }).click()
+  await page.getByLabel('Candidato auditado').selectOption('vulpix')
+  await page.getByRole('button', { name: 'Adicionar ao time' }).click()
+
+  await page.getByRole('button', { name: /Editar Chikorita/ }).click()
+  await expect(page.getByRole('button', { name: /Editar Chikorita/ })).toHaveAttribute('aria-pressed', 'true')
+  await expect(page.locator('article').filter({ has: page.getByRole('heading', { name: 'Chikorita' }) })).toBeVisible()
+  await expect(page.locator('article').filter({ has: page.getByRole('heading', { name: 'Vulpix' }) })).toBeHidden()
+})
+
 test('dataset inválido bloqueia novas afirmações sem consultar a PokéAPI', async ({ page }) => {
   const externalRequests: string[] = []
   page.on('request', (request) => {
