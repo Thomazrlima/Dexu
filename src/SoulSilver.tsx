@@ -33,13 +33,6 @@ function DataNotice({ error, retry }: { error: string; retry: () => void }) {
   </div>
 }
 
-function SampleNote({ dataset }: { dataset: AuditDataset }) {
-  return <details className='sample-note'>
-    <summary>Amostra parcial auditada</summary>
-    <p>{dataset.manifest.sample} Cada escolha é validada individualmente; itens ou presentes limitados não são garantidos simultaneamente para todo o Time.</p>
-  </details>
-}
-
 export function SoulSilverArea() {
   const { dataset, error, retry } = useAuditDataset()
   const [creating, setCreating] = useState(false)
@@ -130,7 +123,25 @@ function TeamStrip({ team, dataset, selectedSlot, onSelect }: { team: Team; data
 function Picker({ label, value, options, onPick }: { label: string; value: string; options: { id: string; label: string }[]; onPick: (value: string) => void }) {
   const [open, setOpen] = useState(false)
   const selected = options.find((option) => option.id === value)?.label ?? 'Escolher'
-  return <div className='picker'><span className='picker__label'>{label}</span><button type='button' className='picker__trigger' aria-label={label} aria-haspopup='listbox' aria-expanded={open} onClick={() => setOpen((current) => !current)}><span>{selected}</span><span aria-hidden='true'>⌄</span></button>{open && <div className='picker__menu' role='listbox' aria-label={label}>{options.map((option) => <button type='button' key={option.id} role='option' aria-selected={option.id === value} onClick={() => { onPick(option.id); setOpen(false) }}>{option.label}</button>)}</div>}</div>
+  return <div className='picker' onKeyDown={(event) => { if (event.key === 'Escape') setOpen(false) }}><span className='picker__label'>{label}</span><button type='button' className='picker__trigger' aria-label={label} aria-haspopup='listbox' aria-expanded={open} onClick={() => setOpen((current) => !current)}><span>{selected}</span><span aria-hidden='true'>⌄</span></button>{open && <div className='picker__menu' role='listbox' aria-label={label}>{options.map((option) => <button type='button' key={option.id} role='option' aria-selected={option.id === value} onClick={() => { onPick(option.id); setOpen(false) }}>{option.label}</button>)}</div>}</div>
+}
+
+function MoveSlots({ member, dataset, onEdit }: { member: Team['members'][number]; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
+  const [openSlot, setOpenSlot] = useState<number | null>(null)
+  const [query, setQuery] = useState('')
+  const options = moveOptions(dataset, member.variantId)
+  const slots = Array.from({ length: 4 }, (_, index) => member.moveIds[index] ?? null)
+  const choose = (slot: number, moveId: string) => {
+    const current = member.moveIds[slot]
+    if (current && current !== moveId) onEdit({ type: 'toggle-move', memberId: member.id, moveId: current })
+    if (current !== moveId) onEdit({ type: 'toggle-move', memberId: member.id, moveId })
+    setOpenSlot(null)
+    setQuery('')
+  }
+  return <section className='moveset' aria-labelledby={`moveset-${member.id}`}><div className='moveset__heading'><h4 id={`moveset-${member.id}`}>Golpes</h4><span>{member.moveIds.length}/4 nesta amostra auditada</span></div><div className='moveset__grid'>{slots.map((moveId, slot) => {
+    const option = options.find((item) => item.move.id === moveId)
+    const filtered = options.filter((item) => !member.moveIds.includes(item.move.id) || item.move.id === moveId).filter((item) => item.move.name.toLowerCase().includes(query.toLowerCase()))
+    return <div className='move-slot' key={slot}><button type='button' className={moveId ? 'move-slot__trigger is-filled' : 'move-slot__trigger'} onClick={() => { setOpenSlot(openSlot === slot ? null : slot); setQuery('') }} aria-expanded={openSlot === slot} aria-haspopup='dialog'><span>{option?.move.name ?? '+ Escolher golpe'}</span>{option && <small>{option.move.type ? typeNames[option.move.type] : 'Tipo variável'} · {option.move.category === 'status' ? 'Status' : option.move.category === 'physical' ? 'Physical' : 'Special'}<br />{option.relations[0]?.conditions}</small>}</button>{moveId && <button type='button' className='move-slot__remove' aria-label={`Remover golpe ${option?.move.name ?? moveId}`} onClick={() => onEdit({ type: 'toggle-move', memberId: member.id, moveId })}>×</button>}{openSlot === slot && <div className='move-picker' role='dialog' aria-label={`Escolher golpe ${slot + 1}`} onKeyDown={(event) => { if (event.key === 'Escape') setOpenSlot(null) }}><input autoFocus type='search' value={query} onChange={(event) => setQuery(event.target.value)} placeholder='Buscar golpe' aria-label='Buscar golpe' />{filtered.map(({ move, relations }) => <button type='button' key={move.id} onClick={() => choose(slot, move.id)}><strong>{move.name}</strong><span>{move.type ? typeNames[move.type] : 'Tipo variável'} · {move.category === 'status' ? 'Status' : move.category === 'physical' ? 'Physical' : 'Special'}</span><small>{relations[0]?.conditions}</small></button>)}{filtered.length === 0 && <p>Nenhum golpe elegível encontrado.</p>}</div>}</div>})}</div><p className='moveset__note'>Disponíveis nesta amostra auditada; não representa todos os golpes que este Pokémon pode aprender.</p></section>
 }
 
 function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'][number]; index: number; dataset: AuditDataset; onEdit: (intent: TeamIntent) => void }) {
@@ -167,6 +178,7 @@ function MemberCard({ member, index, dataset, onEdit }: { member: Team['members'
       {availableMoves.map(({ move, relations }) => <label className="move-choice" key={move.id}><input type="checkbox" checked={member.moveIds.includes(move.id)} disabled={!member.moveIds.includes(move.id) && member.moveIds.length >= 4} onChange={() => onEdit({ type: 'toggle-move', memberId: member.id, moveId: move.id })} /><span><strong>{move.name}</strong> · {move.type ? typeNames[move.type] : 'Tipo variável'} · {move.category === 'status' ? 'Status' : 'Dano'}<small>{relations.map((relation) => `${relation.method}: ${relation.conditions}`).join(' / ')}</small></span></label>)}
       {invalidMoves.map((move) => <label className="move-choice move-choice--invalid" key={move.id}><input type="checkbox" checked onChange={() => onEdit({ type: 'toggle-move', memberId: member.id, moveId: move.id })} /><span><strong>{move.name}</strong> — inválido após revalidação<small>{move.reason} Desmarque para remover.</small></span></label>)}
     </fieldset>
+    <MoveSlots member={member} dataset={dataset} onEdit={onEdit} />
   </article>
 }
 
@@ -237,7 +249,6 @@ export function TeamBuilderPage({ id }: { id: string }) {
   return <div className="workspace">
     <div className="workspace__heading"><span className="eyebrow">SoulSilver / Team Builder</span><h1>{team.name}</h1><p>{team.members.length} de 6 membros · Johto e Kanto até antes do primeiro confronto com Red</p></div>
     {datasetError && <DataNotice error={datasetError} retry={retry} />}
-    {dataset && <SampleNote dataset={dataset} />}
     <TeamStrip team={team} dataset={dataset} selectedSlot={selectedSlot} onSelect={setSelectedSlot} />
     <div className="builder-layout"><div className="builder-edit">
       <section className="builder-toolbar" aria-labelledby="edit-title"><div><span className="eyebrow">01 / Composição</span><h2 id="edit-title">Monte seu Time</h2></div><p role="status" aria-live="polite">{saveStatus || 'Pronto para editar'}</p>

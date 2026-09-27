@@ -52,7 +52,8 @@ test('Vulpix persiste escolhas e atualiza ofensiva e defesa com explicações se
   await expect(member.getByText('Habilidade normal de Vulpix.')).toBeVisible()
   await expect(member.getByText(/Imune a Fire em condição normal/)).toBeVisible()
 
-  await member.getByRole('checkbox', { name: /Ember/ }).check()
+  await member.locator('.moveset').getByRole('button', { name: '+ Escolher golpe' }).first().click()
+  await member.locator('.move-picker').getByRole('button', { name: /Ember/ }).click()
   await page.getByRole('tab', { name: 'Ofensiva' }).click()
   const grass = page.locator('tr').filter({ hasText: 'Planta' })
   await expect(grass).toContainText('2×')
@@ -60,16 +61,17 @@ test('Vulpix persiste escolhas e atualiza ofensiva e defesa com explicações se
   const fire = page.locator('tr').filter({ hasText: 'Fogo' })
   await expect(fire).toContainText('0×')
 
-  await member.getByRole('checkbox', { name: /Ember/ }).uncheck()
+  await member.getByRole('button', { name: 'Remover golpe Ember' }).click()
   await page.getByRole('tab', { name: 'Ofensiva' }).click()
   await expect(grass).toContainText('—')
-  await member.getByRole('checkbox', { name: /Ember/ }).check()
+  await member.locator('.moveset').getByRole('button', { name: '+ Escolher golpe' }).first().click()
+  await member.locator('.move-picker').getByRole('button', { name: /Ember/ }).click()
   await expect(page.getByText('Salvo neste navegador')).toBeVisible()
 
   await page.reload()
   const reopened = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Vulpix' }) })
   await expect(reopened.getByRole('button', { name: 'Habilidade da posição 1' })).toContainText('Flash Fire')
-  await expect(reopened.getByRole('checkbox', { name: /Ember/ })).toBeChecked()
+  await expect(reopened.locator('.move-slot__trigger.is-filled')).toContainText('Ember')
 })
 
 test('slot preserva fallback quando o sprite remoto falha', async ({ page }) => {
@@ -98,6 +100,25 @@ test('slots controlam qual membro está aberto no editor', async ({ page }) => {
   await expect(page.getByRole('button', { name: /Editar Chikorita/ })).toHaveAttribute('aria-pressed', 'true')
   await expect(page.locator('article').filter({ has: page.getByRole('heading', { name: 'Chikorita' }) })).toBeVisible()
   await expect(page.locator('article').filter({ has: page.getByRole('heading', { name: 'Vulpix' }) })).toBeHidden()
+})
+
+test('trocar o slot ativo carrega as opções do membro selecionado', async ({ page }) => {
+  await page.goto('/soulsilver')
+  await page.getByRole('button', { name: 'Criar time' }).click()
+  await page.getByRole('button', { name: 'Adicionar ao time' }).click()
+  await page.getByRole('button', { name: 'Selecionar slot vazio 2' }).click()
+  await page.getByRole('button', { name: 'Candidato auditado' }).click()
+  await page.getByRole('option', { name: /Wooper/ }).click()
+  await page.getByRole('button', { name: 'Adicionar ao time' }).click()
+
+  await page.getByRole('button', { name: /Editar Wooper/ }).click()
+  const editor = page.locator('article').filter({ has: page.getByRole('heading', { name: 'Wooper' }) })
+  await expect(editor).toBeVisible()
+  await editor.getByRole('button', { name: '+ Escolher golpe' }).first().click()
+  await expect(editor.locator('.move-picker').getByText('Mud Shot')).toBeVisible()
+  await expect(editor.locator('.move-picker').getByText('Surf')).toBeVisible()
+  await expect(editor.locator('.move-picker').getByText('Headbutt')).toBeVisible()
+  await expect(editor.getByRole('button', { name: 'Habilidade da posição 2' })).toContainText('Ainda não escolhida')
 })
 
 test('dataset inválido bloqueia novas afirmações sem consultar a PokéAPI', async ({ page }) => {

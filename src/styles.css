@@ -475,3 +475,26 @@ select:disabled { border-color: #e5e7eb; background-color: #f3f5f7; color: #8295
 .picker__menu { position: absolute; z-index: 4; right: 0; left: 0; max-height: 230px; overflow: auto; margin-top: 6px; padding: 6px; border: 1px solid #b7c9d4; border-radius: 9px; background: #fff; box-shadow: 0 16px 32px rgb(15 23 42 / .16); }
 .picker__menu button { width: 100%; min-height: 40px; padding: 8px 10px; border: 0; border-radius: 6px; background: transparent; color: #243447; font-weight: 700; text-align: left; }
 .picker__menu button:hover, .picker__menu button[aria-selected='true'] { background: #eaf8fd; color: #075f92; }
+
+/* The editor renders one active member, so it must never inherit the former multi-card visibility rules. */
+.member-grid > .member-card { display: block !important; }
+.moves-fieldset { display: none; }
+.moveset { margin-top: 24px; }
+.moveset__heading { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.moveset__heading h4 { margin: 0; font-size: 1rem; }
+.moveset__heading span, .moveset__note { color: #587185; font-size: .76rem; }
+.moveset__grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 10px; }
+.move-slot { position: relative; }
+.move-slot__trigger { width: 100%; min-height: 86px; padding: 12px 34px 12px 13px; border: 1px dashed #9eb2c0; border-radius: 8px; background: #fbfcfd; color: #587185; font: 800 .86rem 'Plus Jakarta Sans', Inter, sans-serif; text-align: left; }
+.move-slot__trigger.is-filled { border-style: solid; border-color: #c8d8e1; background: #fff; color: #0f172a; }
+.move-slot__trigger small { display: block; margin-top: 5px; color: #587185; font: 600 .72rem Inter, sans-serif; line-height: 1.35; }
+.move-slot__trigger:hover { border-color: #2ec5ff; background: #f4fbfe; }
+.move-slot__trigger:focus-visible, .move-slot__remove:focus-visible { outline: 3px solid rgb(46 197 255 / .42); outline-offset: 2px; }
+.move-slot__remove { position: absolute; top: 8px; right: 8px; width: 23px; height: 23px; border: 0; border-radius: 50%; background: #fff0ee; color: #a82936; font-size: 1.05rem; line-height: 1; }
+.move-picker { position: absolute; z-index: 6; top: calc(100% + 6px); right: 0; left: 0; max-height: 280px; overflow: auto; padding: 8px; border: 1px solid #b7c9d4; border-radius: 9px; background: #fff; box-shadow: 0 16px 32px rgb(15 23 42 / .16); }
+.move-picker input { width: 100%; min-height: 38px; padding: 8px 10px; border: 1px solid #c4d1da; border-radius: 6px; }
+.move-picker > button { width: 100%; display: grid; gap: 2px; padding: 9px; border: 0; border-radius: 6px; background: transparent; color: #243447; text-align: left; }
+.move-picker > button:hover, .move-picker > button:focus-visible { background: #eaf8fd; outline: 0; }
+.move-picker span, .move-picker small { color: #587185; font-size: .72rem; }
+.move-picker p { margin: 10px; color: #587185; font-size: .8rem; }
+@media (max-width: 760px) { .moveset__grid { grid-template-columns: 1fr; } }
